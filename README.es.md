@@ -1,6 +1,6 @@
 # MINISHELL
 
-42 proyect done by [@gonzalonao](https://github.com/gonzalonao) and me ([@AMarqs](https://github.com/AMarqs))
+Proyecto de 42 hecho por [@gonzalonao](https://github.com/gonzalonao) y yo ([@AMarqs](https://github.com/AMarqs))
 
 
 # Resumen
