@@ -1,11 +1,11 @@
 # MINISHELL
 
-Proyecto de 42 hecho por [@gonzalonao](https://github.com/gonzalonao) y yo ([@AMarqs](https://github.com/AMarqs))
+Proyecto de 42 hecho por [@gonzalonao](https://github.com/gonzalonao) y por mí ([@AMarqs](https://github.com/AMarqs)).
 
 
 # Resumen
 
-El objetivo de este proyecto es que crees un shell sencillo y el aprendezije más profundo procesos y file descriptors.
+El objetivo de este proyecto es la creación de un shell sencillo y el aprendizaje más profundo de procesos y file descriptors.
 
 
 # Descripción
@@ -28,12 +28,9 @@ Piensa en lo que implica: Esta aproximación evita que tu gestor de señales acc
   - ">" debe redirigir output.
   - "<<" debe recibir un delimitador, después leer del input de la fuente actual hasta que una línea que contenga solo el delimitador aparezca. Sin embargo, no necesita actualizar el historial.
   - ">>" debe redirigir el output en modo append.
-- Implementar pipes (carácter |). El output de cada comando en la pipeline se
-conecta a través de un pipe al input del siguiente comando.
-- Gestionar las variables de entorno ($ seguidos de caracteres) que deberán ex-
-pandirse a sus valores.
-- Gestionar $?, que deberá expandirse al estado de salida del comando más reciente
-ejecutado en la pipeline.
+- Implementar pipes (carácter |). El output de cada comando en la pipeline se conecta a través de un pipe al input del siguiente comando.
+- Gestionar las variables de entorno ($ seguidos de caracteres) que deberán expandirse a sus valores.
+- Gestionar $?, que deberá expandirse al estado de salida del comando más reciente ejecutado en la pipeline.
 - Gestionar ctrl-C ctrl-D ctrl-\\, que deberán funcionar como en bash.
 - Cuando sea interactivo:
   - ctrl-C imprime una nueva entrada en una línea nueva.
