@@ -34,7 +34,7 @@ conecta a través de un pipe al input del siguiente comando.
 pandirse a sus valores.
 - Gestionar $?, que deberá expandirse al estado de salida del comando más reciente
 ejecutado en la pipeline.
-- Gestionar ctrl-C ctrl-D ctrl-\, que deberán funcionar como en bash.
+- Gestionar ctrl-C ctrl-D ctrl-\\, que deberán funcionar como en bash.
 - Cuando sea interactivo:
   - ctrl-C imprime una nueva entrada en una línea nueva.
   - ctrl-D termina el shell.
