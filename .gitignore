@@ -60,3 +60,4 @@ test.c
 settings.json
 minishell
 libft/sources/main.c
+out
