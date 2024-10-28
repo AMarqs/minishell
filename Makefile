@@ -4,17 +4,17 @@ LIBFT = ./libft
 HEADERS = -I $(LIBFT)
 LIBRARIES = $(LIBFT)/libft.a
 
-SRCS = 
+SRCS = main.c parse.c
 SRC = $(addprefix src/, $(SRCS))
 OBJ = $(SRC:.c=.o)
 
 FLAGS = -Wall -Wextra -Werror -Ofast -g
-CC = cc
+CC = clang
 
 all: $(NAME)
 
 $(NAME): $(OBJ) libft
-	@$(CC) $(OBJ) $(LIBRARIES) $(HEADERS) -o $(NAME)
+	@$(CC) $(FLAGS) -lreadline $(OBJ) $(LIBRARIES) $(HEADERS) -o $(NAME)
 	
 %.o: %.c
 	$(CC) $(FLAGS) -o $@ -c $< $(HEADERS) && printf "Compiling: $(notdir $< \n)"
