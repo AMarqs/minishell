@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/29 12:24:13 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/10/29 19:29:30 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,8 @@ enum e_words
 	PIPE,
 	REDIR_IN,
 	REDIR_OUT,
-	REDIR_APPEND,
-	REDIR_ERR
+	REDIR_HD,
+	REDIR_APPEND
 };
 
 typedef struct s_token
@@ -87,5 +87,6 @@ typedef struct s_shell
 
 
 void		parse_line(t_shell *shell);
+void		group_tokens(t_shell *shell);
 
 #endif

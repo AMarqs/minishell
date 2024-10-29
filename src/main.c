@@ -6,48 +6,29 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/29 12:49:54 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/10/29 20:01:55 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-char	**arrdup(char **arr)
-{
-	int		i;
-	char	**dup;
-
-	i = 0;
-	while (arr[i])
-		i++;
-	dup = malloc(sizeof(char *) * (i + 1));
-	i = 0;
-	while (arr[i])
-	{
-		dup[i] = ft_strdup(arr[i]);
-		i++;
-	}
-	dup[i] = NULL;
-	return (dup);
-}
-
-char	**get_path(t_shell *shell)
-{
-	int		i;
-	char	**path;
-
-	i = 0;
-	while (shell->envp[i])
-	{
-		if (ft_strncmp(shell->envp[i], "PATH=", 5) == 0)
-		{
-			path = ft_split(shell->envp[i] + 5, ':');
-			return (path);
-		}
-		i++;
-	}
-	return (NULL);
-}
+// char	**get_path(t_shell *shell)
+// {
+// 	int		i;
+// 	char	**path;
+//
+// 	i = 0;
+// 	while (shell->envp[i])
+// 	{
+// 		if (ft_strncmp(shell->envp[i], "PATH=", 5) == 0)
+// 		{
+// 			path = ft_split(shell->envp[i] + 5, ':');
+// 			return (path);
+// 		}
+// 		i++;
+// 	}
+// 	return (NULL);
+// }
 
 /////// BORRAR FUNCION
  
@@ -59,6 +40,19 @@ void	print_tokens(t_token *tokens)
 	while (tmp)
 	{
 		printf("type: %d, value: %c\n", tmp->type, tmp->value);
+		fflush(stdout);
+		tmp = tmp->next;
+	}
+}
+
+void	print_groups(t_group *groups)
+{
+	t_group	*tmp;
+
+	tmp = groups;
+	while (tmp)
+	{
+		printf("type: %d, word: %s\n", tmp->type, tmp->word);
 		fflush(stdout);
 		tmp = tmp->next;
 	}
@@ -97,7 +91,7 @@ t_env	*environ(char **envp)
 	tmp = new;
 	while(envp[i])
 	{
-		new->next; = env_values(envp[i]);
+		new->next = env_values(envp[i]);
 		new = new->next;
 		i++;
 	}
@@ -124,7 +118,8 @@ int	main(int argc, char **argv, char **envp)
 	}
 	
 	shell->envp = environ(envp);
-	shell->path = get_path(shell);
+	//shell->path = get_path(shell);
+	shell->path = NULL;
 	shell->exit_status = 0;
 	shell->tokens = NULL;
 	while (1)
@@ -136,8 +131,11 @@ int	main(int argc, char **argv, char **envp)
 		if (line[0] != '\0')
 			add_history(line);
 		parse_line(shell);
+		print_tokens(shell->tokens);
+		printf("\n");
+		fflush(stdout);
 		group_tokens(shell);
-		//print_tokens(shell->tokens);
+		print_groups(shell->groups);
 		free(line);
 	}
 	rl_clear_history();
