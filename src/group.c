@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   group.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/29 20:27:21 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/10/30 16:39:18 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,10 @@ char	*subs_var(t_shell *shell, t_token **tokens)
 	len = 0;
 	if (tmp->value == '?')
 	{
+		*tokens = tmp->next;
 		return (ft_itoa(shell->exit_status)); ///// LEAK DE MEMORIA
 	}
-	while (tmp->type == ENV_VAR)
+	while (tmp && tmp->type == ENV_VAR)
 	{
 		tmp = tmp->next;
 		len++;
@@ -61,20 +62,21 @@ char	*subs_var(t_shell *shell, t_token **tokens)
 	tmp = *tokens;
 	str = malloc(sizeof(char) * (len + 1));
 	aux = str;
-	while (tmp->type == ENV_VAR)
+	while (tmp && tmp->type == ENV_VAR)
 	{
 		*str = tmp->value;
 		tmp = tmp->next;
 		str++;
 	}
 	str = aux;
+	*tokens = tmp;
 	while (aux_env)
 	{
 		if (ft_strncmp(aux_env->key, str, len) == 0)
 			return (aux_env->value);
 		aux_env = aux_env->next;
 	}
-	*tokens = tmp;
+	write(2, "Error: Variable not found\n", 26);
 	return (NULL);
 }
 
@@ -84,6 +86,7 @@ t_token	*group_chars(t_shell *shell, t_token *tokens, int *is_cmd)
 	t_token	*tmp;
 	char	*str;
 	char	aux[2];
+	char	*aux2;
 
 	new = new_group();
 	if (!new)
@@ -91,12 +94,10 @@ t_token	*group_chars(t_shell *shell, t_token *tokens, int *is_cmd)
 	add_group(shell, new);
 	tmp = tokens;
 	//str = ft_strdup(&tokens->value);
-	str = malloc(sizeof(char) * 2);
+	str = malloc(sizeof(char) * 1);
 	if (!str)
 		return (NULL); /////////////////////// ADD ERROR FUNCTION
-	str[0] = tokens->value;
-	str[1] = '\0';
-	tmp = tokens->next;
+	str[0] = '\0';
 	while (tmp && (tmp->type == CHAR || tmp->type == ENV_VAR))
 	{
 		while (tmp && tmp->type == CHAR)
@@ -110,7 +111,9 @@ t_token	*group_chars(t_shell *shell, t_token *tokens, int *is_cmd)
 		}
 		if (tmp && tmp->type == ENV_VAR)
 		{
-			str = ft_strjoin(str, subs_var(shell, &tmp));
+			aux2 = subs_var(shell, &tmp);
+			if (aux2)
+				str = ft_strjoin(str, aux2);
 		}
 		//tmp = tmp->next;
 	}
@@ -122,6 +125,7 @@ t_token	*group_chars(t_shell *shell, t_token *tokens, int *is_cmd)
 	}
 	else
 		new->type = ARG;
+		
 	tokens = tmp;
 	return (tokens);
 }
@@ -269,6 +273,7 @@ void	group_tokens(t_shell *shell)
 		}
 		else if (tokens->type == CHAR_PIPE) // doble pipe o solo espacios detras
 		{
+			is_cmd = 1;
 			tokens = group_pipe(shell, tokens);
 		}
 		else if (tokens->type == CHAR_IN)  //triple redir o nada de txt o env var

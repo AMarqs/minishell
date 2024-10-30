@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/29 20:01:55 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/10/30 16:03:10 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	print_tokens(t_token *tokens)
 	tmp = tokens;
 	while (tmp)
 	{
-		printf("type: %d, value: %c\n", tmp->type, tmp->value);
+		printf("token_type: %d, value: %c\n", tmp->type, tmp->value);
 		fflush(stdout);
 		tmp = tmp->next;
 	}
@@ -52,7 +52,7 @@ void	print_groups(t_group *groups)
 	tmp = groups;
 	while (tmp)
 	{
-		printf("type: %d, word: %s\n", tmp->type, tmp->word);
+		printf("group_type: %d, word: %s\n", tmp->type, tmp->word);
 		fflush(stdout);
 		tmp = tmp->next;
 	}
