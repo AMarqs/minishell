@@ -4,7 +4,7 @@ LIBFT = ./libft
 HEADERS = -I $(LIBFT)
 LIBRARIES = $(LIBFT)/libft.a
 
-SRCS = main.c parse.c group.c
+SRCS = main.c parse.c group.c built-ins/export.c
 SRC = $(addprefix src/, $(SRCS))
 OBJ = $(SRC:.c=.o)
 

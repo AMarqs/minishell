@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/30 16:39:18 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/10/30 19:41:30 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,11 +253,6 @@ void	group_tokens(t_shell *shell)
 	int		is_cmd;
 	
 	tokens = shell->tokens;
-
-	// group = malloc(sizeof(t_group));
-	// if (!group)
-	// 	return ; /////////////////////// ADD ERROR FUNCTION
-
 	shell->groups = NULL;
 	is_cmd = 1;
 	while (tokens)
@@ -284,7 +279,5 @@ void	group_tokens(t_shell *shell)
 		{
 			tokens = group_out(shell, tokens);
 		}
-		//tokens = tokens->next;
 	}
-	
 }

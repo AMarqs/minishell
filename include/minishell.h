@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/29 19:29:30 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/10/30 21:25:22 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ typedef struct s_shell
 	t_group		*groups;
 }				t_shell;
 
-
+void		export(t_shell *shell, char **args);
 void		parse_line(t_shell *shell);
 void		group_tokens(t_shell *shell);
 

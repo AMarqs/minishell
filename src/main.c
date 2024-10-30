@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/30 16:03:10 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/10/30 21:33:09 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ int	main(int argc, char **argv, char **envp)
 		write(2, "Error: Invalid arguments\n", 25);
 		return (1);
 	}
-
+	
 
 	char	*line;
 	t_shell	*shell;
@@ -136,6 +136,10 @@ int	main(int argc, char **argv, char **envp)
 		fflush(stdout);
 		group_tokens(shell);
 		print_groups(shell->groups);
+		if (!line[0])
+			export(shell, NULL);
+		char	*args[] = {"A=2", "3=3", "b=3", NULL};
+		export(shell, args);
 		free(line);
 	}
 	rl_clear_history();
