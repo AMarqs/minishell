@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/30 21:33:09 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/10/31 13:32:41 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,15 +131,21 @@ int	main(int argc, char **argv, char **envp)
 		if (line[0] != '\0')
 			add_history(line);
 		parse_line(shell);
-		print_tokens(shell->tokens);
-		printf("\n");
-		fflush(stdout);
+		// print_tokens(shell->tokens);
+		// printf("\n");
+		// fflush(stdout);
 		group_tokens(shell);
-		print_groups(shell->groups);
-		if (!line[0])
-			export(shell, NULL);
-		char	*args[] = {"A=2", "3=3", "b=3", NULL};
-		export(shell, args);
+		// print_groups(shell->groups);
+		// char	*args[] = {"A=2", "3=3", "b=3", NULL};
+		// export(shell, args);
+		// if (!line[0])
+		// 	export(shell, NULL);
+		// char	*args2[] = {"A", "3=3", "b", NULL};
+		// unset(shell, args2);
+		// if (!line[0])
+		// 	export(shell, NULL);
+		// env(shell);
+		pwd(shell);
 		free(line);
 	}
 	rl_clear_history();

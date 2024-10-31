@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/30 21:25:22 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/10/31 13:32:46 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,5 +88,9 @@ typedef struct s_shell
 void		export(t_shell *shell, char **args);
 void		parse_line(t_shell *shell);
 void		group_tokens(t_shell *shell);
+void		unset(t_shell *shell, char **args);
+int			ft_strcmp(const char *s1, const char *s2);
+void		env(t_shell *shell);
+void		pwd(t_shell *shell);
 
 #endif

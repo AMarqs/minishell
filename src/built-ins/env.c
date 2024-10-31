@@ -1,46 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   unset.c                                            :+:      :+:    :+:   */
+/*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/30 20:09:20 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/31 12:18:18 by glopez-c         ###   ########.fr       */
+/*   Created: 2024/10/31 12:58:51 by glopez-c          #+#    #+#             */
+/*   Updated: 2024/10/31 12:59:21 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	unset(t_shell *shell, char **args)
+void	env(t_shell *shell)
 {
 	t_env	*tmp;
-	t_env	*prev;
-	int		i;
 
-	i = 0;
-	if (!args)
-		return ;
-	while (args[i])
+	tmp = shell->envp;
+	while (tmp)
 	{
-		tmp = shell->envp;
-		prev = NULL;
-		while (tmp)
-		{
-			if (ft_strcmp(tmp->key, args[i]) == 0)
-			{
-				if (prev)
-					prev->next = tmp->next;
-				else
-					shell->envp = tmp->next;
-				free(tmp->key);
-				free(tmp->value);
-				free(tmp);
-				break ;
-			}
-			prev = tmp;
-			tmp = tmp->next;
-		}
-		i++;
+		printf("%s=%s\n", tmp->key, tmp->value);
+		tmp = tmp->next;
 	}
 }

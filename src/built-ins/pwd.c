@@ -1,46 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   unset.c                                            :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/30 20:09:20 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/31 12:18:18 by glopez-c         ###   ########.fr       */
+/*   Created: 2024/10/31 13:07:32 by glopez-c          #+#    #+#             */
+/*   Updated: 2024/10/31 13:07:51 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	unset(t_shell *shell, char **args)
+void	pwd(t_shell *shell)
 {
-	t_env	*tmp;
-	t_env	*prev;
-	int		i;
+	char	*pwd;
 
-	i = 0;
-	if (!args)
-		return ;
-	while (args[i])
+	pwd = getcwd(NULL, 0);
+	if (!pwd)
 	{
-		tmp = shell->envp;
-		prev = NULL;
-		while (tmp)
-		{
-			if (ft_strcmp(tmp->key, args[i]) == 0)
-			{
-				if (prev)
-					prev->next = tmp->next;
-				else
-					shell->envp = tmp->next;
-				free(tmp->key);
-				free(tmp->value);
-				free(tmp);
-				break ;
-			}
-			prev = tmp;
-			tmp = tmp->next;
-		}
-		i++;
+		printf("minishell: pwd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n");
+		shell->exit_status = 1;
+		return ;
 	}
+	printf("%s\n", pwd);
+	free(pwd);
+	shell->exit_status = 0;
 }

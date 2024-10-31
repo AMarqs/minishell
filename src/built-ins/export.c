@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 20:09:30 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/30 21:41:34 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/10/31 12:16:07 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,12 +110,12 @@ void	order_env(t_shell *shell)
 		tmp = tmp->next;
 	}
 	sorted = first;
-	// while (sorted)
-	// {
-	// 	tmp = sorted;
-	// 	sorted = sorted->next;
-	// 	free(tmp);
-	// }
+	while (sorted)
+	{
+		tmp = sorted;
+		sorted = sorted->next;
+		free(tmp);
+	}
 }
 
 void	ft_split_env(t_env *new, char *value)
@@ -189,13 +189,7 @@ void	export(t_shell *shell, char **args)
 				return ; /////////////////////// ADD ERROR FUNCTION
 			ft_split_env(new, args[i]); 
 			new->next = NULL;
-
 			add_envp(shell, new);
-			
-			// tmp = shell->envp;
-			// while (tmp->next)
-			// 	tmp = tmp->next;
-			// tmp->next = new;
 		}
 		else
 		{
