@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/31 13:32:46 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/01 12:49:28 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,5 +92,9 @@ void		unset(t_shell *shell, char **args);
 int			ft_strcmp(const char *s1, const char *s2);
 void		env(t_shell *shell);
 void		pwd(t_shell *shell);
+void		cd(t_shell *shell, char **args);
+void		ft_echo(t_shell *shell, char **args);
+void		exit_shell(t_shell *shell, int x);
+void		exec_everything(t_shell *shell);
 
 #endif

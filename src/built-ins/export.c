@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 20:09:30 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/31 12:16:07 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/10/31 17:20:21 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,6 +175,7 @@ void	export(t_shell *shell, char **args)
 	int		i;
 
 	i = 0;
+	shell->exit_status = 0;
 	if (!args)
 	{
 		order_env(shell);
@@ -193,6 +194,7 @@ void	export(t_shell *shell, char **args)
 		}
 		else
 		{
+			shell->exit_status = 1;
 			printf("minishell: export: `%s': not a valid identifier\n", args[i]);
 			fflush(stdout);
 		}

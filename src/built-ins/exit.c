@@ -1,30 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pwd.c                                              :+:      :+:    :+:   */
+/*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/31 13:07:32 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/31 17:06:02 by glopez-c         ###   ########.fr       */
+/*   Created: 2024/10/31 17:09:44 by glopez-c          #+#    #+#             */
+/*   Updated: 2024/11/01 13:17:58 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	pwd(t_shell *shell)
+void	exit_shell(t_shell *shell, int x)
 {
-	char	*pwd;
+	// t_env	*tmp;
+	// t_env	*aux;
 
-	pwd = getcwd(NULL, 0);
-	if (!pwd)
+	if (x)
 	{
-		printf("minishell: pwd: error retrieving current directory: No such file or directory\n");
-		fflush(stdout);
-		shell->exit_status = 1;
-		return ;
+		free_all(shell);
 	}
-	printf("%s\n", pwd);
-	free(pwd);
-	shell->exit_status = 0;
+	exit(shell->exit_status);
 }

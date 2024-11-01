@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:05 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/29 20:00:31 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/01 13:25:35 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void add_token(t_shell *shell, t_token *new)
 	if (!shell->tokens)
 	{
 		shell->tokens = new;
+		// free(new); // ?????
 		return ;
 	}
 	while (tmp->next)

@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/30 19:41:30 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/01 13:30:31 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void	add_group(t_shell *shell, t_group *new)
 	while (tmp->next)
 		tmp = tmp->next;
 	tmp->next = new;
+	// free(new); // ???
 }
 
 char	*subs_var(t_shell *shell, t_token **tokens)
@@ -156,6 +157,7 @@ t_token	*group_pipe(t_shell *shell, t_token *tokens)
 	}
 	if (i == 0)
 	{
+		shell->exit_status = 2;
 		return (NULL); /////////////////////// ADD ERROR FUNCTION
 	}
 	else
@@ -200,6 +202,7 @@ t_token	*group_in(t_shell *shell, t_token *tokens)
 		}
 		else if (tmp->type != BLANK && ok == 0)
 		{
+			shell->exit_status = 2;
 			return (NULL); /////////////////////// ADD ERROR FUNCTION
 		}
 		tmp = tmp->next;
@@ -239,6 +242,7 @@ t_token	*group_out(t_shell *shell, t_token *tokens)
 		}
 		else if (tmp->type != BLANK && ok == 0)
 		{
+			shell->exit_status = 2;
 			return (NULL); /////////////////////// ADD ERROR FUNCTION
 		}
 		tmp = tmp->next;
