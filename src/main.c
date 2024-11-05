@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/01 12:56:26 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/05 16:52:07 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,10 +137,12 @@ int	main(int argc, char **argv, char **envp)
 			add_history(line);
 		parse_line(shell);
 		group_tokens(shell);
+		print_tokens(shell->tokens);
 		print_groups(shell->groups);
 		// char *args[] = {"", NULL};
 		// ft_echo(shell, args);
 		exec_everything(shell);
+		//free_all(shell);
 		free(line);
 	}
 	rl_clear_history();

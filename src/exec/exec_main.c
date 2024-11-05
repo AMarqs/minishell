@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/01 13:36:21 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/05 13:29:14 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,10 @@ char	**get_args(t_group *groups)
 		return (NULL);
 	i = 0;
 	tmp = groups;
-	while (tmp && tmp->type == ARG)
+	while (tmp && tmp->type != PIPE)
 	{
-		i++;
+		if (tmp->type == ARG)
+			i++;
 		tmp = tmp->next;
 	}
 	args = malloc(sizeof(char *) * (i + 1));
@@ -67,9 +68,10 @@ char	**get_args(t_group *groups)
 		return (NULL); /////////////////////// ADD ERROR FUNCTION
 	i = 0;
 	tmp = groups;
-	while (tmp)
+	while (tmp && tmp->type != PIPE)
 	{
-		args[i++] = tmp->word;
+		if (tmp->type == ARG)
+			args[i++] = tmp->word;
 		tmp = tmp->next;
 	}
 	args[i] = NULL;
@@ -95,7 +97,7 @@ void	exec_builtin(t_shell *shell, t_group *group, int i, int child)
 		pwd(shell);
 	if (i == 7)
 		unset(shell, args);
-	free_array(args);
+	free(args);
 }
 
 void	exec_everything(t_shell *shell)

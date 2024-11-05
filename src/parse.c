@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:05 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/01 13:25:35 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/05 16:53:08 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,13 @@ void add_token(t_shell *shell, t_token *new)
 	tmp->next = new;
 }
 
-void	create_token(t_shell *shell, enum e_token type, char value)
+t_token	*create_token(t_shell *shell, enum e_token type, char value)
 {
 	t_token	*new;
 
 	new = new_token(type, value);
 	add_token(shell, new);
+	return (new);
 }
 
 int	token_type(char c)
@@ -91,6 +92,7 @@ int	tokenize_quotes(t_shell *shell, int type, int j)
 {
 	int i;
 	char *line;
+	t_token *new;
 
 	line = shell->line;
 	i = j;
@@ -98,6 +100,7 @@ int	tokenize_quotes(t_shell *shell, int type, int j)
 	{
 		if (token_type(line[i]) == ENV_VAR && type == D_QUOTE)
 		{
+			new = create_token(shell, ENV_VAR_Q, line[i]);
 			if (line[i + 1] == '?')
 			{
 				create_token(shell, ENV_VAR, line[++i]);
@@ -106,17 +109,19 @@ int	tokenize_quotes(t_shell *shell, int type, int j)
 			{
 				while (ft_isalnum(line[++i]) || line[i] == '_')
 				{
-					create_token(shell, ENV_VAR, line[i]);
+					create_token(shell, ENV_VAR_Q, line[i]);
 				}
 				i--;
 			}
 			else
-				create_token(shell, CHAR, line[i]);
+				new->type = CHAR;
 		}
 		else
 			create_token(shell, CHAR, line[i]);
 		i++;
 	}
+	if (i == j)
+		create_token(shell, EMPTY, '\0');
 	return (i);
 }
 
@@ -126,6 +131,7 @@ void	parse_line(t_shell *shell)
 	int		i;
 	int		closed;
 	int		type;
+	t_token	*new;
 
 	i = 0;
 	line = shell->line;
@@ -143,6 +149,7 @@ void	parse_line(t_shell *shell)
 		}
 		else if (type == ENV_VAR)
 		{
+			new = create_token(shell, ENV_VAR, line[i]);
 			if (line[i + 1] == '?')
 			{
 				create_token(shell, ENV_VAR, line[++i]);
@@ -156,7 +163,7 @@ void	parse_line(t_shell *shell)
 				i--;
 			}
 			else
-				create_token(shell, CHAR, line[i]);
+				new->type = CHAR;
 		}
 		else
 			create_token(shell, type, line[i]);

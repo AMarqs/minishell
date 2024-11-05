@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/01 12:49:28 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/05 14:47:56 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,9 @@ enum e_token
 	CHAR_OUT,
 	S_QUOTE,
 	D_QUOTE,
-	ENV_VAR
+	ENV_VAR,
+	ENV_VAR_Q,
+	EMPTY
 };
 
 enum e_words
@@ -51,7 +53,8 @@ enum e_words
 	REDIR_IN,
 	REDIR_OUT,
 	REDIR_HD,
-	REDIR_APPEND
+	REDIR_APPEND,
+	FILENAME
 };
 
 typedef struct s_token
@@ -96,5 +99,7 @@ void		cd(t_shell *shell, char **args);
 void		ft_echo(t_shell *shell, char **args);
 void		exit_shell(t_shell *shell, int x);
 void		exec_everything(t_shell *shell);
+void		free_all(t_shell *shell);
+void		free_array(char **array);
 
 #endif

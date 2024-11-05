@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/01 13:30:31 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/05 17:10:19 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,11 @@ char	*subs_var(t_shell *shell, t_token **tokens)
 	int		len;
 	t_token	*tmp;
 	t_env 	*aux_env;
+	enum e_token type;
 	
+	type = (*tokens)->type;
 	aux_env = shell->envp;
+	*tokens = (*tokens)->next;
 	tmp = *tokens;
 	len = 0;
 	if (tmp->value == '?')
@@ -55,7 +58,8 @@ char	*subs_var(t_shell *shell, t_token **tokens)
 		*tokens = tmp->next;
 		return (ft_itoa(shell->exit_status)); ///// LEAK DE MEMORIA
 	}
-	while (tmp && tmp->type == ENV_VAR)
+	while (tmp && (tmp->type == ENV_VAR || tmp->type == ENV_VAR_Q)
+			&& tmp->value != '$')
 	{
 		tmp = tmp->next;
 		len++;
@@ -63,22 +67,47 @@ char	*subs_var(t_shell *shell, t_token **tokens)
 	tmp = *tokens;
 	str = malloc(sizeof(char) * (len + 1));
 	aux = str;
-	while (tmp && tmp->type == ENV_VAR)
+	while (tmp && (tmp->type == ENV_VAR || tmp->type == ENV_VAR_Q)
+			&& tmp->value != '$')
 	{
 		*str = tmp->value;
 		tmp = tmp->next;
 		str++;
 	}
+	*str = '\0';
 	str = aux;
 	*tokens = tmp;
 	while (aux_env)
 	{
-		if (ft_strncmp(aux_env->key, str, len) == 0)
-			return (aux_env->value);
+		if (ft_strcmp(aux_env->key, str) == 0)
+			return (ft_strdup(aux_env->value));
 		aux_env = aux_env->next;
 	}
-	write(2, "Error: Variable not found\n", 26);
+	if (type == ENV_VAR_Q)
+		return (ft_strdup(""));
 	return (NULL);
+}
+
+char	*better_strjoin(char const *s1, char const *s2)
+{
+	size_t	i;
+	size_t	j;
+	char	*str;
+
+	if (!s1)
+		return (ft_strdup(s2));
+	i = ft_strlen(s1) + ft_strlen(s2);
+	str = (char *)malloc(sizeof(char) * (i + 1));
+	if (!str)
+		return (NULL);  /////////////////////// ADD ERROR FUNCTION
+	i = -1;
+	while (s1[++i])
+		str[i] = s1[i];
+	j = 0;
+	while (s2[j])
+		str[i++] = s2[j++];
+	str[i] = '\0';
+	return (str);
 }
 
 t_token	*group_chars(t_shell *shell, t_token *tokens, int *is_cmd)
@@ -89,35 +118,37 @@ t_token	*group_chars(t_shell *shell, t_token *tokens, int *is_cmd)
 	char	aux[2];
 	char	*aux2;
 
-	new = new_group();
-	if (!new)
-		return (NULL); /////////////////////// ADD ERROR FUNCTION
-	add_group(shell, new);
 	tmp = tokens;
-	//str = ft_strdup(&tokens->value);
-	str = malloc(sizeof(char) * 1);
-	if (!str)
-		return (NULL); /////////////////////// ADD ERROR FUNCTION
-	str[0] = '\0';
-	while (tmp && (tmp->type == CHAR || tmp->type == ENV_VAR))
+	str = NULL;
+	while (tmp && (tmp->type == CHAR || tmp->type == ENV_VAR
+			|| tmp->type == ENV_VAR_Q || tmp->type == EMPTY))
 	{
 		while (tmp && tmp->type == CHAR)
 		{
 			aux[0]= tmp->value;
 			aux[1] = '\0';
-			str = ft_strjoin(str, aux);
-			if (!str)
-				return (NULL); /////////////////////// ADD ERROR FUNCTION
+			str = better_strjoin(str, aux);
 			tmp = tmp->next;
 		}
-		if (tmp && tmp->type == ENV_VAR)
+		if (tmp && (tmp->type == ENV_VAR || tmp->type == ENV_VAR_Q))
 		{
 			aux2 = subs_var(shell, &tmp);
 			if (aux2)
-				str = ft_strjoin(str, aux2);
+				str = better_strjoin(str, aux2);
 		}
-		//tmp = tmp->next;
+		if (tmp && tmp->type == EMPTY)
+		{
+			str = better_strjoin(str, "");
+			tmp = tmp->next;
+		}
 	}
+	tokens = tmp;
+	if (!str)
+		return (tokens);
+	new = new_group();
+	if (!new)
+		return (NULL); /////////////////////// ADD ERROR FUNCTION
+	add_group(shell, new);
 	new->word = str;
 	if (*is_cmd)
 	{
@@ -126,8 +157,6 @@ t_token	*group_chars(t_shell *shell, t_token *tokens, int *is_cmd)
 	}
 	else
 		new->type = ARG;
-		
-	tokens = tmp;
 	return (tokens);
 }
 
@@ -158,7 +187,9 @@ t_token	*group_pipe(t_shell *shell, t_token *tokens)
 	if (i == 0)
 	{
 		shell->exit_status = 2;
-		return (NULL); /////////////////////// ADD ERROR FUNCTION
+		new->type = PIPE;
+		new->word = ft_strdup("|");
+		//return (NULL); /////////////////////// ADD ERROR FUNCTION
 	}
 	else
 	{
@@ -186,7 +217,7 @@ t_token	*group_in(t_shell *shell, t_token *tokens)
 	add_group(shell, new);
 	new->type = REDIR_IN;
 	new->word = ft_strdup("<"); // se puede quitar
-	if (tmp->next->type == CHAR_IN)
+	if (tmp->next && tmp->next->type == CHAR_IN)
 	{
 		new->type = REDIR_HD;
 		new->word = ft_strdup("<<"); // se puede quitar
@@ -203,7 +234,7 @@ t_token	*group_in(t_shell *shell, t_token *tokens)
 		else if (tmp->type != BLANK && ok == 0)
 		{
 			shell->exit_status = 2;
-			return (NULL); /////////////////////// ADD ERROR FUNCTION
+			//return (NULL); /////////////////////// ADD ERROR FUNCTION
 		}
 		tmp = tmp->next;
 	}
@@ -226,7 +257,7 @@ t_token	*group_out(t_shell *shell, t_token *tokens)
 	add_group(shell, new);
 	new->type = REDIR_OUT;
 	new->word = ft_strdup(">"); // se puede quitar
-	if (tmp->next->type == CHAR_OUT)
+	if (tmp->next && tmp->next->type == CHAR_OUT)
 	{
 		new->type = REDIR_APPEND;
 		new->word = ft_strdup(">>"); // se puede quitar
@@ -243,12 +274,54 @@ t_token	*group_out(t_shell *shell, t_token *tokens)
 		else if (tmp->type != BLANK && ok == 0)
 		{
 			shell->exit_status = 2;
-			return (NULL); /////////////////////// ADD ERROR FUNCTION
+			//return (NULL); /////////////////////// ADD ERROR FUNCTION
 		}
 		tmp = tmp->next;
 	}
 	tokens = aux;
 	return (tokens);
+}
+
+void	syntax_check(t_shell *shell)
+{
+	t_group	*tmp;
+	
+	tmp = shell->groups;
+	while (tmp)
+	{
+		if (tmp->type == REDIR_APPEND || tmp->type == REDIR_HD
+		|| tmp->type == REDIR_IN || tmp->type == REDIR_OUT)
+		{
+			if (!tmp->next)
+			{
+				printf("minishell: syntax error near unexpected token `newline'\n");
+				break ;
+			}
+			else if (tmp->next->type != CHAR && tmp->next->type != CMD)
+			{
+				printf("minishell: syntax error near unexpected token `%s'\n", tmp->next->word);
+				break ;
+			}
+			else
+				tmp->next->type = FILENAME;
+		}
+		else if (tmp->type == PIPE)
+		{
+			if (!tmp->next)			
+			{
+				printf("minishell: syntax error near unexpected token `newline'\n");
+				break ;
+			}
+			else if (tmp->next->type != CMD && tmp->next->type != ARG)
+			{
+				printf("minishell: syntax error near unexpected token `%s'\n", tmp->next->word);
+				break ;
+			}
+		}
+		tmp = tmp->next;
+	}
+	fflush(stdout);
+	
 }
 
 void	group_tokens(t_shell *shell)
@@ -266,7 +339,8 @@ void	group_tokens(t_shell *shell)
 			while (tokens && tokens->type == BLANK)
 				tokens = tokens->next;
 		}
-		else if (tokens->type == CHAR || tokens->type == ENV_VAR)
+		else if (tokens->type == CHAR || tokens->type == ENV_VAR
+		|| tokens->type == ENV_VAR_Q || tokens->type == EMPTY)
 		{
 			tokens = group_chars(shell, tokens, &is_cmd);
 		}
@@ -284,4 +358,5 @@ void	group_tokens(t_shell *shell)
 			tokens = group_out(shell, tokens);
 		}
 	}
+	syntax_check(shell);
 }
