@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/06 13:36:20 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/06 18:45:15 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,20 @@
 // }
 
 /////// BORRAR FUNCION
- 
+
+void	print_array(char **array)
+{
+	int	i;
+
+	i = 0;
+	while (array[i])
+	{
+		printf("array[%d]: %s\n", i, array[i]);
+		fflush(stdout);
+		i++;
+	}
+}
+
 void	print_tokens(t_token *tokens)
 {
 	t_token	*tmp;

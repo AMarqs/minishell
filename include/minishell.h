@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/05 14:47:56 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/06 18:45:30 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,5 +101,9 @@ void		exit_shell(t_shell *shell, int x);
 void		exec_everything(t_shell *shell);
 void		free_all(t_shell *shell);
 void		free_array(char **array);
+void		save_restore_fds(int i);
+char		**get_args(t_group *groups);
+void		print_groups(t_group *group);
+void		print_array(char **array);
 
 #endif
