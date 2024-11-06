@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/06 19:36:22 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/06 21:46:05 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ char	**get_args(t_group *groups)
 		tmp = tmp->next;
 	}
 	args[i] = NULL;
-	print_array(args);
 	return (args);
 }
 
@@ -314,61 +313,90 @@ void	exec_block(t_shell *shell, t_group *group)
 	exec_cmd(shell, group);
 }
 
+void	redirect_pipes(int prev_fd, int next_fd)
+{
+	// printf("prev_fd: %d, next_fd: %d\n", prev_fd, next_fd);
+	if (prev_fd >= 0)
+	{
+		dup2(prev_fd, STDIN_FILENO);
+		close(prev_fd);
+	}
+	if (next_fd >= 0)
+	{
+		dup2(next_fd, STDOUT_FILENO);
+		close(next_fd);
+	}
+}
+
+void	advance_group(t_group **group)
+{
+	t_group	*tmp;
+
+	tmp = *group;
+	while (tmp && tmp->type != PIPE)
+		tmp = tmp->next;
+	if (tmp && tmp->type == PIPE)
+		*group = tmp->next;
+}
+
 void	exec_everything(t_shell *shell)
 {
 	// t_group	*tmp;
 	int		pipe_n;
-	// int		i;
-	int pid;
+	int		i;
+	//int pid;
 	int pipe_fd[2];
-	int prev_fd[2];
+	int prev_fd;
+	t_group *group;
+	int	*pids;
 
+	group = shell->groups;
 	save_restore_fds(0);
-	// i = is_builtin(shell->groups->word);
+	prev_fd = -1;
 	pipe_n = count_pipes(shell->groups);
-	
-	while (pipe_n >= 0)
+	pids = malloc(sizeof(int) * (pipe_n + 1));
+	i = 0;
+	while (i <= pipe_n)
 	{
-		if (pipe_n > 0)
+		if (i < pipe_n)
 		{
 			pipe(pipe_fd);
 		}
-		pid = fork();
-		if (pid == 0)
+		else
 		{
-			exec_block(shell, shell->groups);
-			exit(0);
+			pipe_fd[0] = -1;
+			pipe_fd[1] = -1;
 		}
-		else if (pid < 0)
+		pids[i] = fork();
+		if (pids[i] == 0)
+		{
+			if (pipe_fd[0] >= 0)
+				close(pipe_fd[0]);
+			redirect_pipes(prev_fd, pipe_fd[1]);
+			exec_block(shell, group);
+			exit(EXIT_SUCCESS);
+		}
+		else if (pids[i] < 0)
 		{
 			perror("fork");
 			shell->exit_status = 1;
 		}
-		prev_fd[0] = pipe_fd[0];
-		pipe_n--;
+		if (prev_fd != -1) 
+			close(prev_fd); // Close previous read end in parent
+        if (pipe_fd[1] != -1) 
+			close(pipe_fd[1]); // Close write end in parent
+		advance_group(&group);
+		prev_fd = pipe_fd[0];
+		i++;
 	}
-
-
-
-	// if (pipe_n == 0 && i)
-	// {
-	// 	tmp = shell->groups;
-	// 	if (tmp->type == CMD)
-	// 		exec_builtin(shell, shell->groups, i, 0);
-	// }
-	// else if (pipe_n == 0)
-
-	
-	// if (pipe_n == 0)
-	// {
-	// 	exec_block(shell, shell->groups);
-	// }
-	// else
-	// 	exec_pipes(shell);
-	// {
-	// 	tmp = shell->groups;
-	// 	if (tmp->type == CMD)
-	// 		exec_cmd(shell, tmp->word);
-	// }
+	i = 0;
+	while (i <= pipe_n)
+	{
+		waitpid(pids[i], &shell->exit_status, 0);
+		if (WIFEXITED(shell->exit_status))
+			shell->exit_status = WEXITSTATUS(shell->exit_status);
+		i++;
+	}
+	free(pids);
 	save_restore_fds(1);
 }

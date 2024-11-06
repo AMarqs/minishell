@@ -53,22 +53,10 @@ Mkfile.old
 dkms.conf
 
 # Local files
-file
-o
-out.txt
+
+
 test.c
 settings.json
 minishell
 libft/sources/main.c
-out
-hola.txt
-hola
-out2
-nuevo_file
-hola
-nuevo_file2
-hola
-test
-adios
-outfile
-e
+
