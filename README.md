@@ -1,5 +1,11 @@
 <h1 align="center">MINISHELL</h1>
 
+<div>
+    <p align="right">
+        <a href="/README.es.md">README in Spanish<a>
+    </p>
+</div>
+
 ## Overview
 
 The goal of this project is to create a simple shell and gain a deeper understanding of processes and file descriptors.
