@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/05 17:10:19 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/06 14:13:36 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ char	*better_strjoin(char const *s1, char const *s2)
 	return (str);
 }
 
-t_token	*group_chars(t_shell *shell, t_token *tokens, int *is_cmd)
+t_token	*group_chars(t_shell *shell, t_token *tokens)
 {
 	t_group	*new;
 	t_token	*tmp;
@@ -150,13 +150,7 @@ t_token	*group_chars(t_shell *shell, t_token *tokens, int *is_cmd)
 		return (NULL); /////////////////////// ADD ERROR FUNCTION
 	add_group(shell, new);
 	new->word = str;
-	if (*is_cmd)
-	{
-		new->type = CMD;
-		*is_cmd = 0;
-	}
-	else
-		new->type = ARG;
+	new->type = ARG;
 	return (tokens);
 }
 
@@ -297,9 +291,9 @@ void	syntax_check(t_shell *shell)
 				printf("minishell: syntax error near unexpected token `newline'\n");
 				break ;
 			}
-			else if (tmp->next->type != CHAR && tmp->next->type != CMD)
+			else if (tmp->next->type != ARG)
 			{
-				printf("minishell: syntax error near unexpected token `%s'\n", tmp->next->word);
+				printf("minishell: syntax error near unexpected token `%s'\n %d\n", tmp->next->word, tmp->next->type);
 				break ;
 			}
 			else
@@ -312,7 +306,7 @@ void	syntax_check(t_shell *shell)
 				printf("minishell: syntax error near unexpected token `newline'\n");
 				break ;
 			}
-			else if (tmp->next->type != CMD && tmp->next->type != ARG)
+			else if (tmp->next->type == PIPE)
 			{
 				printf("minishell: syntax error near unexpected token `%s'\n", tmp->next->word);
 				break ;
@@ -324,14 +318,37 @@ void	syntax_check(t_shell *shell)
 	
 }
 
+void	find_cmds(t_shell *shell)
+{
+	t_group	*tmp;
+	int		is_cmd;
+	
+	tmp = shell->groups;
+	is_cmd = 1;
+	while (tmp)
+	{
+		if (tmp->type == ARG)
+		{
+			if (is_cmd)
+			{
+				tmp->type = CMD;
+				is_cmd = 0;
+			}
+		}
+		else if (tmp->type == PIPE)
+		{
+			is_cmd = 1;
+		}
+		tmp = tmp->next;
+	}
+}
+
 void	group_tokens(t_shell *shell)
 {
 	t_token	*tokens;
-	int		is_cmd;
 	
 	tokens = shell->tokens;
 	shell->groups = NULL;
-	is_cmd = 1;
 	while (tokens)
 	{
 		if (tokens->type == BLANK)
@@ -342,11 +359,10 @@ void	group_tokens(t_shell *shell)
 		else if (tokens->type == CHAR || tokens->type == ENV_VAR
 		|| tokens->type == ENV_VAR_Q || tokens->type == EMPTY)
 		{
-			tokens = group_chars(shell, tokens, &is_cmd);
+			tokens = group_chars(shell, tokens);
 		}
 		else if (tokens->type == CHAR_PIPE) // doble pipe o solo espacios detras
 		{
-			is_cmd = 1;
 			tokens = group_pipe(shell, tokens);
 		}
 		else if (tokens->type == CHAR_IN)  //triple redir o nada de txt o env var
@@ -359,4 +375,5 @@ void	group_tokens(t_shell *shell)
 		}
 	}
 	syntax_check(shell);
+	find_cmds(shell);
 }

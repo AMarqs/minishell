@@ -26,10 +26,10 @@ CC = clang
 all: $(NAME)
 
 $(NAME): $(OBJ) libft
-	@$(CC) $(FLAGS) -lreadline $(OBJ) $(LIBRARIES) $(HEADERS) -o $(NAME)
+	@$(CC) $(FLAGS) -lreadline -gdwarf-4 $(OBJ) $(LIBRARIES) $(HEADERS) -o $(NAME)
 	
 %.o: %.c
-	$(CC) $(FLAGS) -o $@ -c $< $(HEADERS) && printf "Compiling: $(notdir $< \n)"
+	$(CC) $(FLAGS) -gdwarf-4 -o $@ -c $< $(HEADERS) && printf "Compiling: $(notdir $< \n)"
 
 libft:
 	@make -C $(LIBFT)

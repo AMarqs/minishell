@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/05 13:29:14 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/06 15:04:44 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,12 +100,128 @@ void	exec_builtin(t_shell *shell, t_group *group, int i, int child)
 	free(args);
 }
 
+void	input_redirection(t_shell *shell, char *file)
+{
+	int	fd;
+
+	fd = open(file, O_RDONLY);
+	if (fd < 0)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(file, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		shell->exit_status = 1;
+	}
+	else
+		dup2(fd, STDIN_FILENO);
+	close(fd);
+}
+
+void	output_redirection(t_shell *shell, char *file)
+{
+	int	fd;
+
+	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd < 0)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(file, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		shell->exit_status = 1;
+	}
+	else
+		dup2(fd, STDOUT_FILENO);
+	close(fd);
+}
+
+void	append_redirection(t_shell *shell, char *file)
+{
+	int	fd;
+
+	fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (fd < 0)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(file, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		shell->exit_status = 1;
+	}
+	else
+		dup2(fd, STDOUT_FILENO);
+	close(fd);
+}
+
+void	heredoc_redirection(t_shell *shell, char *word)
+{
+	int		fd;
+	char	*line;
+
+	fd = open("heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd < 0)
+	{
+		ft_putstr_fd("minishell: heredoc: No such file or directory\n", 2);
+		shell->exit_status = 1;
+	}
+	else
+	{
+		while (1)
+		{
+			line = readline("> ");
+			if (!line || ft_strcmp(line, word) == 0)
+			{
+				free(line);
+				break ;
+			}
+			ft_putstr_fd(line, fd);
+			ft_putstr_fd("\n", fd);
+			free(line);
+		}
+		close(fd);
+		fd = open("heredoc", O_RDONLY);
+		dup2(fd, STDIN_FILENO);
+		close(fd);
+	}
+}
+
+void	handle_redirections(t_shell *shell, t_group *group)
+{
+	t_group	*tmp;
+
+	tmp = group;
+	while (tmp && tmp->type != PIPE)
+	{
+		if (tmp->type == REDIR_IN)
+		{
+			input_redirection(shell, tmp->next->word);
+		}
+		if (tmp->type == REDIR_OUT)
+		{
+			output_redirection(shell, tmp->next->word);
+		}
+		if (tmp->type == REDIR_APPEND)
+		{
+			append_redirection(shell, tmp->next->word);
+		}
+		if (tmp->type == REDIR_HD)
+		{
+			heredoc_redirection(shell, tmp->next->word);
+		}
+		tmp = tmp->next;
+	}
+}
+
+void	exec_pipe(t_shell *shell, t_group *group)
+{
+	handle_redirections(shell, group);	
+}
+
 void	exec_everything(t_shell *shell)
 {
 	t_group	*tmp;
 	int		pipe_n;
 	int		i;
 
+	save_restore_fds(0);
 	i = is_builtin(shell->groups->word);
 	pipe_n = count_pipes(shell->groups);
 	if (pipe_n == 0 && i)
@@ -114,6 +230,12 @@ void	exec_everything(t_shell *shell)
 		if (tmp->type == CMD)
 			exec_builtin(shell, shell->groups, i, 0);
 	}
+	else if (pipe_n == 0)
+	{
+		tmp = shell->groups;
+		if (tmp->type == CMD)
+			exec_pipe(shell, shell->groups);
+	}
 	// else
 	// 	exec_pipes(shell);
 	// {
@@ -121,4 +243,5 @@ void	exec_everything(t_shell *shell)
 	// 	if (tmp->type == CMD)
 	// 		exec_cmd(shell, tmp->word);
 	// }
+	save_restore_fds(1);
 }
