@@ -6,8 +6,10 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:56:03 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/07 13:56:13 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/07 19:20:36 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+

@@ -1,12 +1,16 @@
-# MINISHELL
+<h1 align="center">MINISHELL</h1>
 
-Proyecto de 42 hecho por [@gonzalonao](https://github.com/gonzalonao) y por mí ([@AMarqs](https://github.com/AMarqs)).
-
+<div>
+    <p align="right">
+        <a href="/README.md">README en Inglés<a>
+    </p>
+</div>
 
 # Resumen
 
 El objetivo de este proyecto es la creación de un shell sencillo y el aprendizaje más profundo de procesos y file descriptors.
 
+<br>
 
 # Descripción
 
@@ -20,31 +24,35 @@ Piensa en lo que implica: Esta aproximación evita que tu gestor de señales acc
 > [!WARNING]
 > Esta variable global no puede proporcionar ninguna otra información o datos que el número de una señal recibida. Por lo tanto está prohibido utilizar estructuras de tipo “norm” en global.
 
-- No interpretar comillas sin cerrar o caracteres especiales no especificados en el enunciado como \ (barra invertida) o ; (punto y coma).
-- Gestionar que la ’ evite que el shell interprete los metacaracteres en la secuencia entrecomillada.
-- Gestionar que la " evite que el shell interprete los metacaracteres en la secuencia entrecomillada exceptuando $ (signo de dólar).
+- No interpretar comillas sin cerrar o caracteres especiales no especificados en el enunciado como `\` (barra invertida) o `;` (punto y coma).
+- Gestionar que la `’` evite que el shell interprete los metacaracteres en la secuencia entrecomillada.
+- Gestionar que la `"` evite que el shell interprete los metacaracteres en la secuencia entrecomillada exceptuando `$` (signo de dólar).
 - Implementar redirecciones:
-  - "<" debe redirigir input.
-  - ">" debe redirigir output.
-  - "<<" debe recibir un delimitador, después leer del input de la fuente actual hasta que una línea que contenga solo el delimitador aparezca. Sin embargo, no necesita actualizar el historial.
-  - ">>" debe redirigir el output en modo append.
-- Implementar pipes (carácter |). El output de cada comando en la pipeline se conecta a través de un pipe al input del siguiente comando.
-- Gestionar las variables de entorno ($ seguidos de caracteres) que deberán expandirse a sus valores.
-- Gestionar $?, que deberá expandirse al estado de salida del comando más reciente ejecutado en la pipeline.
-- Gestionar ctrl-C ctrl-D ctrl-\\, que deberán funcionar como en bash.
+  - `<` debe redirigir input.
+  - `>` debe redirigir output.
+  - `<<` debe recibir un delimitador, después leer del input de la fuente actual hasta que una línea que contenga solo el delimitador aparezca. Sin embargo, no necesita actualizar el historial.
+  - `>>` debe redirigir el output en modo append.
+- Implementar pipes (carácter `|`). El output de cada comando en la pipeline se conecta a través de un pipe al input del siguiente comando.
+- Gestionar las variables de entorno (`$` seguidos de caracteres) que deberán expandirse a sus valores.
+- Gestionar `$?`, que deberá expandirse al estado de salida del comando más reciente ejecutado en la pipeline.
+- Gestionar `ctrl-C`, `ctrl-D` y `ctrl-\\`, que deberán funcionar como en bash.
 - Cuando sea interactivo:
-  - ctrl-C imprime una nueva entrada en una línea nueva.
-  - ctrl-D termina el shell.
-  - ctrl-\ no hace nada.
+  - `ctrl-C` imprime una nueva entrada en una línea nueva.
+  - `ctrl-D` termina el shell.
+  - `ctrl-\` no hace nada.
 - Deberá implementar los built-ins:
-  - echo con la opción -n.
-  - cd solo con una ruta relativa o absoluta.
-  - pwd sin opciones.
-  - export sin opciones.
-  - unset sin opciones.
-  - env sin opciones o argumentos.
-  - exit sin opciones.
+  - `echo` con la opción `-n`.
+  - `cd` solo con una ruta relativa o absoluta.
+  - `pwd` sin opciones.
+  - `export` sin opciones.
+  - `unset` sin opciones.
+  - `env` sin opciones o argumentos.
+  - `exit` sin opciones.
 
+> [!TIP]
+> No es necesario implementar operadores "prohibidos" de shell como `&&` o `||`.
+
+<br>
 
 # Guidelines
 
@@ -57,3 +65,23 @@ Piensa en lo que implica: Esta aproximación evita que tu gestor de señales acc
 
 > [!NOTE]
 > La función readline puede producir algunos leaks que no necesitas arreglar. Eso no significa que tu código, sí, el código que has escrito, pueda producir leaks.
+
+<br>
+
+## Compilar y ejecutar
+
+Para compilar el shell, simplemente ejecuta el comando `make`. Esto generará un un ejecutable llamado `minishell`.
+
+Para iniciar el shell, utiliza:
+
+```
+./minishell
+```
+
+Una vez dentro de `minishell`, puedes ejecutar comandos como lo harías en Bash.
+
+<br>
+
+## Autores
+- [@gonzalonao](https://github.com/gonzalonao)
+- [@AMarqs](https://github.com/AMarqs)

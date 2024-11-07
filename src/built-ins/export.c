@@ -3,14 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 20:09:30 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/31 17:20:21 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/07 14:24:24 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+void	ft_swap(char **a, char **b)
+{
+	char	*tmp;
+
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+
+int	ft_strcmp(const char *s1, const char *s2)
+{
+	unsigned char	*str1;
+	unsigned char	*str2;
+
+	str1 = (unsigned char *)s1;
+	str2 = (unsigned char *)s2;
+	while (*str1 && *str2 && *str1 == *str2)
+	{
+		str1++;
+		str2++;
+	}
+	return (*str1 - *str2);
+}
 
 t_env	*envp_dup(t_env *envp)
 {
@@ -40,30 +64,6 @@ t_env	*envp_dup(t_env *envp)
 		envp = envp->next;
 	}
 	return (tmp2);
-}
-
-void	ft_swap(char **a, char **b)
-{
-	char	*tmp;
-
-	tmp = *a;
-	*a = *b;
-	*b = tmp;
-}
-
-int	ft_strcmp(const char *s1, const char *s2)
-{
-	unsigned char	*str1;
-	unsigned char	*str2;
-
-	str1 = (unsigned char *)s1;
-	str2 = (unsigned char *)s2;
-	while (*str1 && *str2 && *str1 == *str2)
-	{
-		str1++;
-		str2++;
-	}
-	return (*str1 - *str2);
 }
 
 void	order_env(t_shell *shell)
@@ -128,22 +128,6 @@ void	ft_split_env(t_env *new, char *value)
 	free(tmp);
 }
 
-int	check_export(char *args)
-{
-	int	i;
-
-	i = 1;
-	if (!ft_isalpha(args[0]) && args[0] != '_')
-		return (0);
-	while (args[i] && args[i] != '=')
-	{
-		if (!ft_isalnum(args[i]) && args[i] != '_')
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
 void	add_envp(t_shell *shell, t_env *new)
 {
 	t_env	*tmp;
@@ -167,6 +151,22 @@ void	add_envp(t_shell *shell, t_env *new)
 		tmp = tmp->next;
 	}
 	tmp->next = new;
+}
+
+int	check_export(char *args)
+{
+	int	i;
+
+	i = 1;
+	if (!ft_isalpha(args[0]) && args[0] != '_')
+		return (0);
+	while (args[i] && args[i] != '=')
+	{
+		if (!ft_isalnum(args[i]) && args[i] != '_')
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
 void	export(t_shell *shell, char **args)

@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/07 13:54:24 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/07 20:47:51 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,108 +98,6 @@ void	exec_builtin(t_shell *shell, t_group *group, int i, int child)
 	if (i == 7)
 		unset(shell, args);
 	free(args);
-}
-
-void	input_redirection(t_shell *shell, char *file)
-{
-	int	fd;
-
-	fd = open(file, O_RDONLY);
-	if (fd < 0)
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(file, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
-		shell->exit_status = 1;
-	}
-	else
-		dup2(fd, STDIN_FILENO);
-	close(fd);
-}
-
-void	output_redirection(t_shell *shell, char *file)
-{
-	int	fd;
-
-	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd < 0)
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(file, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
-		shell->exit_status = 1;
-	}
-	else
-		dup2(fd, STDOUT_FILENO);
-	close(fd);
-}
-
-void	append_redirection(t_shell *shell, char *file)
-{
-	int	fd;
-
-	fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	if (fd < 0)
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(file, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
-		shell->exit_status = 1;
-	}
-	else
-		dup2(fd, STDOUT_FILENO);
-	close(fd);
-}
-
-void	heredoc_redirection(t_shell *shell, char *word)
-{
-	int		fd;
-	char	*line;
-
-	fd = open("/tmp/heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd < 0)
-	{
-		ft_putstr_fd("minishell: heredoc: No such file or directory\n", 2);
-		shell->exit_status = 1;
-	}
-	else
-	{
-		while (1)
-		{
-			line = readline("> ");
-			if (!line || (ft_strcmp(line, word) == 0))
-			{
-				free(line);
-				break ;
-			}
-			ft_putstr_fd(line, fd);
-			ft_putstr_fd("\n", fd);
-			free(line);
-		}
-		close(fd);
-		fd = open("/tmp/heredoc", O_RDONLY);
-		dup2(fd, STDIN_FILENO);
-		close(fd);
-	}
-}
-
-void	handle_redirections(t_shell *shell, t_group *group)
-{
-	t_group	*tmp;
-
-	tmp = group;
-	while (tmp && tmp->type != PIPE)
-	{
-		if (tmp->type == REDIR_IN)
-			input_redirection(shell, tmp->next->word);
-		if (tmp->type == REDIR_OUT)
-			output_redirection(shell, tmp->next->word);
-		if (tmp->type == REDIR_APPEND)
-			append_redirection(shell, tmp->next->word);
-		if (tmp->type == REDIR_HD)
-			heredoc_redirection(shell, tmp->next->word);
-		tmp = tmp->next;
-	}
 }
 
 char	*find_cmd(t_group *group)
@@ -373,6 +271,7 @@ void	exec_everything(t_shell *shell)
 
 	group = shell->groups;
 	save_restore_fds(0);
+	read_heredocs(shell);
 	prev_fd = -1;
 	pipe_n = count_pipes(shell->groups);
 	pids = malloc(sizeof(int) * (pipe_n + 1));

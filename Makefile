@@ -17,6 +17,7 @@ SRCS = main.c \
 	exec/exec_main.c \
 	free_errors.c \
 	exec/fd_handler.c \
+	exec/redirections.c \
 	exec/heredoc.c \
 	signals/signal.c
 
