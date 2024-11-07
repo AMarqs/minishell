@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_main.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/06 21:46:05 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/07 13:54:24 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,21 +191,13 @@ void	handle_redirections(t_shell *shell, t_group *group)
 	while (tmp && tmp->type != PIPE)
 	{
 		if (tmp->type == REDIR_IN)
-		{
 			input_redirection(shell, tmp->next->word);
-		}
 		if (tmp->type == REDIR_OUT)
-		{
 			output_redirection(shell, tmp->next->word);
-		}
 		if (tmp->type == REDIR_APPEND)
-		{
 			append_redirection(shell, tmp->next->word);
-		}
 		if (tmp->type == REDIR_HD)
-		{
 			heredoc_redirection(shell, tmp->next->word);
-		}
 		tmp = tmp->next;
 	}
 }
@@ -259,14 +251,53 @@ char	**get_envp(t_env *envp)
 	return (env);
 }
 
+char	*get_path(char **env, char *cmd)
+{
+	int		i;
+	char	*tmp;
+	char	**path;
+
+	path = NULL;
+	i = 0;
+	while (env[i])
+	{
+		if (ft_strncmp(env[i], "PATH=", 5) == 0)
+		{
+			path = ft_split(env[i] + 5, ':');
+		}
+		i++;
+	}
+	if (!path)
+	{
+		path = malloc(sizeof(char *) * 2);
+		if (!path)
+			return (NULL); /////////////////////// ADD ERROR FUNCTION
+		path[0] = ft_strdup("/bin"); /// temporal
+		path[1] = NULL;
+	}
+	i = 0;
+	while (path[i])
+	{
+		tmp = ft_strjoin(path[i], "/");
+		path[i] = ft_strjoin(tmp, cmd);
+		if (!access(path[i], F_OK))
+		{
+			free(tmp);
+			return (path[i]);
+		}
+		i++;
+	}
+	return (NULL);
+}
+
 void	exec_cmd(t_shell *shell, t_group *group)
 {
 	int		i;
-	//int		child;
 	char	**args;
 	char	*cmd;
 	char	**env;
-
+	char	*path;
+	
 	cmd = find_cmd(group);
 	if (!cmd)
 		return ;
@@ -277,33 +308,25 @@ void	exec_cmd(t_shell *shell, t_group *group)
 		return ;
 	}
 	args = get_args(group);
-	// printf("cmd: %s\n", cmd);
-	// print_groups(group);
 	env = get_envp(shell->envp);
-	execve(group->word, args, env);
-	// child = fork();
-	// if (child == 0)
-	// {
-	// 	execve(group->word, args, env);
-	// 	write(2, "minishell: ", 11);
-	// 	ft_putstr_fd(group->word, 2);
-	// 	ft_putstr_fd(": command not found\n", 2);
-	// 	shell->exit_status = 127;
-	// 	free(args);
-	// 	exit(127);
-	// }
-	// else if (child < 0)
-	// {
-	// 	perror("fork");
-	// 	shell->exit_status = 1;
-	// }
-	// else
-	// {
-	// 	waitpid(child, &shell->exit_status, 0);
-	// 	if (WIFEXITED(shell->exit_status))
-	// 		shell->exit_status = WEXITSTATUS(shell->exit_status);
-	// 	printf("exit_status: %d\n", shell->exit_status);
-	// }
+	if (access(cmd, F_OK))
+	{
+		path = get_path(env, cmd);
+		if (!path)
+		{
+			printf("bash: %s: No existe el archivo o el directorio\n", cmd);
+			shell->exit_status = 127;
+			return ;
+		}
+		cmd = path;
+	}
+	if (access(cmd, X_OK))
+	{
+		printf("bash: %s: Permiso denegado\n", cmd);
+		shell->exit_status = 126;
+		return ;
+	}
+	execve(cmd, args, env);
 	free(args);
 }
 
@@ -341,10 +364,8 @@ void	advance_group(t_group **group)
 
 void	exec_everything(t_shell *shell)
 {
-	// t_group	*tmp;
 	int		pipe_n;
 	int		i;
-	//int pid;
 	int pipe_fd[2];
 	int prev_fd;
 	t_group *group;
@@ -356,46 +377,53 @@ void	exec_everything(t_shell *shell)
 	pipe_n = count_pipes(shell->groups);
 	pids = malloc(sizeof(int) * (pipe_n + 1));
 	i = 0;
-	while (i <= pipe_n)
+	if (pipe_n == 0 && is_builtin(find_cmd(group)))
 	{
-		if (i < pipe_n)
-		{
-			pipe(pipe_fd);
-		}
-		else
-		{
-			pipe_fd[0] = -1;
-			pipe_fd[1] = -1;
-		}
-		pids[i] = fork();
-		if (pids[i] == 0)
-		{
-			if (pipe_fd[0] >= 0)
-				close(pipe_fd[0]);
-			redirect_pipes(prev_fd, pipe_fd[1]);
-			exec_block(shell, group);
-			exit(EXIT_SUCCESS);
-		}
-		else if (pids[i] < 0)
-		{
-			perror("fork");
-			shell->exit_status = 1;
-		}
-		if (prev_fd != -1) 
-			close(prev_fd); // Close previous read end in parent
-        if (pipe_fd[1] != -1) 
-			close(pipe_fd[1]); // Close write end in parent
-		advance_group(&group);
-		prev_fd = pipe_fd[0];
-		i++;
+		exec_block(shell, group);
 	}
-	i = 0;
-	while (i <= pipe_n)
+	else
 	{
-		waitpid(pids[i], &shell->exit_status, 0);
-		if (WIFEXITED(shell->exit_status))
-			shell->exit_status = WEXITSTATUS(shell->exit_status);
-		i++;
+		while (i <= pipe_n)
+		{
+			if (i < pipe_n)
+			{
+				pipe(pipe_fd);
+			}
+			else
+			{
+				pipe_fd[0] = -1;
+				pipe_fd[1] = -1;
+			}
+			pids[i] = fork();
+			if (pids[i] == 0)
+			{
+				if (pipe_fd[0] >= 0)
+					close(pipe_fd[0]);
+				redirect_pipes(prev_fd, pipe_fd[1]);
+				exec_block(shell, group);
+				exit(EXIT_SUCCESS);
+			}
+			else if (pids[i] < 0)
+			{
+				perror("fork");
+				shell->exit_status = 1;
+			}
+			if (prev_fd != -1) 
+				close(prev_fd); // Close previous read end in parent
+			if (pipe_fd[1] != -1) 
+				close(pipe_fd[1]); // Close write end in parent
+			advance_group(&group);
+			prev_fd = pipe_fd[0];
+			i++;
+		}
+		i = 0;
+		while (i <= pipe_n)
+		{
+			waitpid(pids[i], &shell->exit_status, 0);
+			if (WIFEXITED(shell->exit_status))
+				shell->exit_status = WEXITSTATUS(shell->exit_status);
+			i++;
+		}
 	}
 	free(pids);
 	save_restore_fds(1);

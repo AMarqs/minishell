@@ -3,36 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/06 20:34:13 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/07 12:24:03 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-// char	**get_path(t_shell *shell)
-// {
-// 	int		i;
-// 	char	**path;
-//
-// 	i = 0;
-// 	while (shell->envp[i])
-// 	{
-// 		if (ft_strncmp(shell->envp[i], "PATH=", 5) == 0)
-// 		{
-// 			path = ft_split(shell->envp[i] + 5, ':');
-// 			return (path);
-// 		}
-// 		i++;
-// 	}
-// 	return (NULL);
-// }
-
-/////// BORRAR FUNCION
-
-void	print_array(char **array)
+void	print_array(char **array) /////// BORRAR FUNCION
 {
 	int	i;
 
@@ -45,7 +25,7 @@ void	print_array(char **array)
 	}
 }
 
-void	print_tokens(t_token *tokens)
+void	print_tokens(t_token *tokens) /////// BORRAR FUNCION
 {
 	t_token	*tmp;
 
@@ -58,7 +38,7 @@ void	print_tokens(t_token *tokens)
 	}
 }
 
-void	print_groups(t_group *groups)
+void	print_groups(t_group *groups) /////// BORRAR FUNCION
 {
 	t_group	*tmp;
 

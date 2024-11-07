@@ -16,7 +16,9 @@ SRCS = main.c \
 	built-ins/exit.c \
 	exec/exec_main.c \
 	free_errors.c \
-	exec/fd_handler.c
+	exec/fd_handler.c \
+	exec/heredoc.c \
+	signals/signal.c
 
 SRC = $(addprefix src/, $(SRCS))
 OBJ = $(SRC:.c=.o)
