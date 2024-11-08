@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/07 12:24:03 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/08 13:27:39 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ void	print_groups(t_group *groups) /////// BORRAR FUNCION
 	t_group	*tmp;
 
 	tmp = groups;
+	if (!tmp)
+		write(1, "groups is NULL\n", 15);
 	while (tmp)
 	{
 		printf("group_type: %d, word: %s\n", tmp->type, tmp->word);
@@ -59,7 +61,7 @@ t_env	*env_values(char *env)
 	new = malloc(sizeof(t_env));
 	if (!new)
 		return (NULL); /////////////////////// ADD ERROR FUNCTION
-	tmp = ft_split(env, '=');
+	tmp = ft_split_env(env, '=');
 	if (!tmp)
 		return (NULL); /////////////////////// ADD ERROR FUNCTION
 	new->key = tmp[0];
@@ -117,8 +119,8 @@ int	main(int argc, char **argv, char **envp)
 	oldpwd[1] = NULL;
 	export(shell, oldpwd);
 	//shell->path = get_path(shell);
-	shell->path = NULL;
 	shell->exit_status = 0;
+	shell->path = NULL;
 	shell->tokens = NULL;
 	while (1)
 	{
@@ -127,16 +129,19 @@ int	main(int argc, char **argv, char **envp)
 		if (!line)
 			break ;
 		if (line[0] != '\0')
+		{
+			shell->exit_status = 0;
 			add_history(line);
-		parse_line(shell);
-		group_tokens(shell);
-		//print_tokens(shell->tokens);
-		// print_groups(shell->groups);
-		// char *args[] = {"", NULL};
-		// ft_echo(shell, args);
-		exec_everything(shell);
-		//free_all(shell);
+			parse_line(shell);
+			group_tokens(shell);
+			exec_everything(shell);
+			shell->prev_status = shell->exit_status;
+			//free_all(shell);
+		}
 		free(line);
 	}
 	rl_clear_history();
+	// int i = shell->exit_status;
+	// free_all(shell);
+	// return (i);
 }

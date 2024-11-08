@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_main.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/07 20:47:51 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/08 13:56:35 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ void	exec_builtin(t_shell *shell, t_group *group, int i, int child)
 	if (i == 3)
 		env(shell);
 	if (i == 4)
-		exit_shell(shell, child);
+		exit_shell(shell, child, args);
 	if (i == 5)
 		export(shell, args);
 	if (i == 6)
@@ -105,6 +105,7 @@ char	*find_cmd(t_group *group)
 	t_group	*tmp;
 
 	tmp = group;
+	fflush(stdout);
 	while (tmp && tmp->type != PIPE)
 	{
 		if (tmp->type == CMD)
@@ -230,7 +231,12 @@ void	exec_cmd(t_shell *shell, t_group *group)
 
 void	exec_block(t_shell *shell, t_group *group)
 {
+	write(1, "exec_block\n", 11);
 	handle_redirections(shell, group);
+	printf("exit_status: %d\n", shell->exit_status);
+	fflush(stdout);
+	if (shell->exit_status)
+		return ;
 	exec_cmd(shell, group);
 }
 
@@ -300,7 +306,7 @@ void	exec_everything(t_shell *shell)
 					close(pipe_fd[0]);
 				redirect_pipes(prev_fd, pipe_fd[1]);
 				exec_block(shell, group);
-				exit(EXIT_SUCCESS);
+				exit(shell->exit_status);
 			}
 			else if (pids[i] < 0)
 			{

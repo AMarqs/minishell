@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:56:01 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/07 21:25:40 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/08 13:42:28 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	subs_hd(t_shell *shell, char *line, int fd)
 			{
 				if (line[i] == '?')
 				{
-					ft_putstr_fd(ft_itoa(shell->exit_status), fd); ///// LEAK DE MEMORIA
+					ft_putstr_fd(ft_itoa(shell->prev_status), fd); ///// LEAK DE MEMORIA
 					i++;
 				}
 				j = i;
@@ -102,9 +102,13 @@ void	create_heredoc(t_shell *shell, char *word, int hd_num)
 	doc = "/tmp/heredoc";
 	doc = ft_strjoin(doc, ft_itoa(hd_num));
 	fd = open(doc, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	free(doc);
 	if (fd < 0)
 	{
-		ft_putstr_fd("minishell: heredoc: No such file or directory\n", 2);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(doc, 2);
+		ft_putstr_fd(": ", 2);
+		perror("");
 		shell->exit_status = 1;
 		return ;
 	}

@@ -60,3 +60,4 @@ settings.json
 minishell
 libft/sources/main.c
 
+minishell_test.log

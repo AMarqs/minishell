@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 14:01:08 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/07 21:24:51 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/08 13:54:20 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,15 @@ void	input_redirection(t_shell *shell, char *file)
 	{
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(file, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
+		ft_putstr_fd(": ", 2);
+		perror("");
 		shell->exit_status = 1;
 	}
 	else
+	{
+		// shell->exit_status = 0;
 		dup2(fd, STDIN_FILENO);
+	}
 	close(fd);
 }
 
@@ -33,12 +37,13 @@ void	output_redirection(t_shell *shell, char *file)
 {
 	int	fd;
 
-	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0600);
 	if (fd < 0)
 	{
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(file, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
+		ft_putstr_fd(": ", 2);
+		perror("");
 		shell->exit_status = 1;
 	}
 	else
@@ -55,7 +60,8 @@ void	append_redirection(t_shell *shell, char *file)
 	{
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(file, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
+		ft_putstr_fd(": ", 2);
+		perror("");
 		shell->exit_status = 1;
 	}
 	else
@@ -63,7 +69,7 @@ void	append_redirection(t_shell *shell, char *file)
 	close(fd);
 }
 
-void	heredoc_redirection(int i)
+void	heredoc_redirection(t_shell *shell, int i)
 {
 	char	*doc;
 	int		fd;
@@ -71,7 +77,16 @@ void	heredoc_redirection(int i)
 	doc = "/tmp/heredoc";
 	doc = ft_strjoin(doc, ft_itoa(i));
 	fd = open(doc, O_RDONLY);
-	dup2(fd, STDIN_FILENO);
+	if (fd < 0)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(doc, 2);
+		ft_putstr_fd(": ", 2);
+		perror("");
+		shell->exit_status = 1;
+	}
+	else
+		dup2(fd, STDIN_FILENO);
 	free(doc);
 	close(fd);
 }
@@ -92,7 +107,9 @@ void	handle_redirections(t_shell *shell, t_group *group)
 		if (tmp->type == REDIR_APPEND)
 			append_redirection(shell, tmp->next->word);
 		if (tmp->type == REDIR_HD)
-			heredoc_redirection(hd_num - count_hd(tmp));
+			heredoc_redirection(shell, hd_num - count_hd(tmp));
+		if (shell->exit_status != 0)
+			break ;
 		tmp = tmp->next;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:27:05 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/01 13:06:15 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/08 12:20:39 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,15 @@ void	cd(t_shell *shell, char **args)
 	if (args[1])
 	{
 		shell->exit_status = 1;
-		printf("minishell: cd: too many arguments\n");
-		fflush(stdout);
+		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
 		return ; /////////////////////// ADD ERROR FUNCTION
 	}
 	oldpwd = getcwd(NULL, 0);
 	if (chdir(args[0]) == -1)
 	{
-		printf("minishell: cd: %s: No such file or directory\n", args[0]);
-		fflush(stdout);
+		ft_putstr_fd("minishell: cd: ", 2);
+		ft_putstr_fd(args[0], 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
 		shell->exit_status = 1;
 		free(oldpwd);
 		return ; /////////////////////// ADD ERROR FUNCTION

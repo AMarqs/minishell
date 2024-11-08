@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 20:09:30 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/07 14:24:24 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/08 12:39:23 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,11 +118,11 @@ void	order_env(t_shell *shell)
 	}
 }
 
-void	ft_split_env(t_env *new, char *value)
+void	ft_split_var(t_env *new, char *value)
 {
 	char	**tmp;
 
-	tmp = ft_split(value, '=');
+	tmp = ft_split_env(value, '=');
 	new->key = tmp[0];
 	new->value = tmp[1];
 	free(tmp);
@@ -188,15 +188,16 @@ void	export(t_shell *shell, char **args)
 			new = malloc(sizeof(t_env));
 			if (!new)
 				return ; /////////////////////// ADD ERROR FUNCTION
-			ft_split_env(new, args[i]); 
+			ft_split_var(new, args[i]); 
 			new->next = NULL;
 			add_envp(shell, new);
 		}
 		else
 		{
 			shell->exit_status = 1;
-			printf("minishell: export: `%s': not a valid identifier\n", args[i]);
-			fflush(stdout);
+			write(2, "minishell: export: `", 20);
+			write(2, args[i], ft_strlen(args[i]));
+			write(2, "': not a valid identifier\n", 26);
 		}
 		i++;
 	}

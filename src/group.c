@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/06 14:13:36 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/08 13:48:07 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ char	*subs_var(t_shell *shell, t_token **tokens)
 	if (tmp->value == '?')
 	{
 		*tokens = tmp->next;
-		return (ft_itoa(shell->exit_status)); ///// LEAK DE MEMORIA
+		return (ft_itoa(shell->prev_status)); ///// LEAK DE MEMORIA
 	}
 	while (tmp && (tmp->type == ENV_VAR || tmp->type == ENV_VAR_Q)
 			&& tmp->value != '$')
@@ -268,6 +268,7 @@ t_token	*group_out(t_shell *shell, t_token *tokens)
 		else if (tmp->type != BLANK && ok == 0)
 		{
 			shell->exit_status = 2;
+			write(1, "cositas'\n", 9);
 			//return (NULL); /////////////////////// ADD ERROR FUNCTION
 		}
 		tmp = tmp->next;

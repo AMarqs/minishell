@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/07 21:26:19 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/08 13:39:38 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ typedef struct s_shell
 	char		*line;
 	char		**path;                //// BORRAR SI NO SE USA
 	int			exit_status;
+	int			prev_status;
 	t_token		*tokens;
 	t_group		*groups;
 	t_env		*envp;
@@ -127,14 +128,14 @@ void		ft_echo(t_shell *shell, char **args);
 void		env(t_shell *shell);
 
 // exit.c
-void		exit_shell(t_shell *shell, int x);
+void		exit_shell(t_shell *shell, int x, char **args);
 
 // export.c
 void		ft_swap(char **a, char **b);               // a archivo utils???
 int			ft_strcmp(const char *s1, const char *s2);	// a archivo utils???
 t_env		*envp_dup(t_env *envp);					// a archivo manage_env???
 void		order_env(t_shell *shell);				// a archivo manage_env???
-void		ft_split_env(t_env *new, char *value);		// a archivo manage_env???
+void		ft_split_var(t_env *new, char *value);		// a archivo manage_env???
 void		add_envp(t_shell *shell, t_env *new);		// a archivo manage_env???
 int			check_export(char *args);
 void		export(t_shell *shell, char **args);
@@ -155,7 +156,7 @@ t_env		*env_values(char *env);
 void		input_redirection(t_shell *shell, char *file);
 void		output_redirection(t_shell *shell, char *file);
 void		append_redirection(t_shell *shell, char *file);
-void		heredoc_redirection(int i);
+void		heredoc_redirection(t_shell *shell, int i);
 void		handle_redirections(t_shell *shell, t_group *group);
 
 // get_stuff.c
@@ -168,5 +169,11 @@ int			count_hd(t_group *groups);
 void		subs_hd(t_shell *shell, char *line, int fd);
 void		create_heredoc(t_shell *shell, char *word, int hd_num);
 void		read_heredocs(t_shell *shell);
+
+// SRC
+
+// utils.c
+
+char		**ft_split_env(char *str, char del);
 
 #endif
