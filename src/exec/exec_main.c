@@ -6,11 +6,20 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 13:56:35 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/08 19:49:47 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+int	is_directory(char *path)
+{
+	struct stat	statbuf;
+
+	if (stat(path, &statbuf) != 0)
+		return (0);
+	return (S_ISDIR(statbuf.st_mode));
+}
 
 int	count_pipes(t_group *groups)
 {
@@ -208,12 +217,37 @@ void	exec_cmd(t_shell *shell, t_group *group)
 	}
 	args = get_args(group);
 	env = get_envp(shell->envp);
-	if (access(cmd, F_OK))
+
+	if ((cmd[0] == '.' && cmd[1] == '/') || cmd[0] == '/')
+	{
+		if (access(cmd, F_OK))
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd, 2);
+			ft_putstr_fd(": ", 2);
+			ft_putstr_fd("No such file or directory\n", 2);
+			shell->exit_status = 127;
+			return ;
+		}
+		else if (is_directory(cmd))
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd, 2);
+			ft_putstr_fd(": ", 2);
+			ft_putstr_fd("Is a directory\n", 2);
+			shell->exit_status = 126;
+			return ;
+		}
+	}
+	else
 	{
 		path = get_path(env, cmd);
 		if (!path)
 		{
-			printf("bash: %s: No existe el archivo o el directorio\n", cmd);
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd, 2);
+			ft_putstr_fd(": ", 2);
+			ft_putstr_fd("command not found\n", 2);
 			shell->exit_status = 127;
 			return ;
 		}
@@ -221,7 +255,10 @@ void	exec_cmd(t_shell *shell, t_group *group)
 	}
 	if (access(cmd, X_OK))
 	{
-		printf("bash: %s: Permiso denegado\n", cmd);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd, 2);
+		ft_putstr_fd(": ", 2);
+		perror("");
 		shell->exit_status = 126;
 		return ;
 	}
@@ -231,9 +268,7 @@ void	exec_cmd(t_shell *shell, t_group *group)
 
 void	exec_block(t_shell *shell, t_group *group)
 {
-	write(1, "exec_block\n", 11);
 	handle_redirections(shell, group);
-	printf("exit_status: %d\n", shell->exit_status);
 	fflush(stdout);
 	if (shell->exit_status)
 		return ;
@@ -306,6 +341,7 @@ void	exec_everything(t_shell *shell)
 					close(pipe_fd[0]);
 				redirect_pipes(prev_fd, pipe_fd[1]);
 				exec_block(shell, group);
+				//write(1, "minishell: command not found\n", 29);
 				exit(shell->exit_status);
 			}
 			else if (pids[i] < 0)

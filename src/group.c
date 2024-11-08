@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 13:48:07 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/08 18:32:19 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,7 @@ t_token	*group_pipe(t_shell *shell, t_token *tokens)
 	tmp = tokens;
 	i = 0;
 	tmp = tmp->next;
-	while (tmp && tmp->type != CHAR_PIPE && tmp->type != CHAR_IN && tmp->type != CHAR_OUT)
+	while (tmp && tmp->type != CHAR_PIPE)
 	{
 		tmp = tmp->next;
 		i++;
