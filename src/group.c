@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 18:32:19 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/08 20:06:55 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,7 +268,6 @@ t_token	*group_out(t_shell *shell, t_token *tokens)
 		else if (tmp->type != BLANK && ok == 0)
 		{
 			shell->exit_status = 2;
-			write(1, "cositas'\n", 9);
 			//return (NULL); /////////////////////// ADD ERROR FUNCTION
 		}
 		tmp = tmp->next;
@@ -289,12 +288,14 @@ void	syntax_check(t_shell *shell)
 		{
 			if (!tmp->next)
 			{
-				printf("minishell: syntax error near unexpected token `newline'\n");
+				ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
 				break ;
 			}
 			else if (tmp->next->type != ARG)
 			{
-				printf("minishell: syntax error near unexpected token `%s'\n %d\n", tmp->next->word, tmp->next->type);
+				ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
+				ft_putstr_fd(tmp->next->word, 2);
+				ft_putstr_fd("'\n", 2);
 				break ;
 			}
 			else
@@ -304,19 +305,19 @@ void	syntax_check(t_shell *shell)
 		{
 			if (!tmp->next)			
 			{
-				printf("minishell: syntax error near unexpected token `newline'\n");
+				ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
 				break ;
 			}
 			else if (tmp->next->type == PIPE)
 			{
-				printf("minishell: syntax error near unexpected token `%s'\n", tmp->next->word);
+				ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
+				ft_putstr_fd(tmp->next->word, 2);
+				ft_putstr_fd("'\n", 2);
 				break ;
 			}
 		}
 		tmp = tmp->next;
-	}
-	fflush(stdout);
-	
+	}	
 }
 
 void	find_cmds(t_shell *shell)

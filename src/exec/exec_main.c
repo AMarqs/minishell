@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 19:49:47 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/08 20:14:22 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ int	count_pipes(t_group *groups)
 
 int	is_builtin(char *cmd)
 {
+	if (!cmd)
+		return (0);
 	if (ft_strcmp(cmd, "cd") == 0)
 		return (1);
 	if (ft_strcmp(cmd, "echo") == 0)
@@ -114,7 +116,6 @@ char	*find_cmd(t_group *group)
 	t_group	*tmp;
 
 	tmp = group;
-	fflush(stdout);
 	while (tmp && tmp->type != PIPE)
 	{
 		if (tmp->type == CMD)
@@ -309,15 +310,19 @@ void	exec_everything(t_shell *shell)
 	int prev_fd;
 	t_group *group;
 	int	*pids;
+	char	*cmd;
 
 	group = shell->groups;
+	cmd = find_cmd(group);
+	if (!cmd)
+		return ;
 	save_restore_fds(0);
 	read_heredocs(shell);
 	prev_fd = -1;
 	pipe_n = count_pipes(shell->groups);
 	pids = malloc(sizeof(int) * (pipe_n + 1));
 	i = 0;
-	if (pipe_n == 0 && is_builtin(find_cmd(group)))
+	if (pipe_n == 0 && is_builtin(cmd))
 	{
 		exec_block(shell, group);
 	}
