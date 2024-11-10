@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 20:09:30 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 18:26:28 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/10 19:02:17 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,11 +102,15 @@ void	order_env(t_shell *shell)
 	tmp = first;
 	while (tmp)
 	{
-		printf("declare -x %s", tmp->key);
+		ft_putstr_fd("declare -x ", 1);
+		ft_putstr_fd(tmp->key, 1);
 		if (tmp->value)
-			printf("=\"%s\"", tmp->value);
-		printf("\n");
-		fflush(stdout);
+		{
+			ft_putstr_fd("=\"", 1);
+			ft_putstr_fd(tmp->value, 1);
+			ft_putstr_fd("\"", 1);
+		}
+		ft_putstr_fd("\n", 1);
 		tmp = tmp->next;
 	}
 	sorted = first;
@@ -176,7 +180,7 @@ void	export(t_shell *shell, char **args)
 
 	i = 0;
 	shell->exit_status = 0;
-	if (!args)
+	if (!args || args[0] == NULL)
 	{
 		order_env(shell);
 		return ;

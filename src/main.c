@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 19:20:51 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/10 18:15:46 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ int	main(int argc, char **argv, char **envp)
 			parse_line(shell);
 			group_tokens(shell);
 			//print_groups(shell->groups);
-			if (shell->groups)
+			if (shell->groups && shell->exit_status == 0)
 				exec_everything(shell);
 			shell->prev_status = shell->exit_status;
 			//free_all(shell);

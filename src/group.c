@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 20:06:55 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/10 18:28:07 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -281,6 +281,12 @@ void	syntax_check(t_shell *shell)
 	t_group	*tmp;
 	
 	tmp = shell->groups;
+	if (tmp->type == PIPE)
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
+		shell->exit_status = 2;
+		return ;
+	}
 	while (tmp)
 	{
 		if (tmp->type == REDIR_APPEND || tmp->type == REDIR_HD
@@ -289,6 +295,7 @@ void	syntax_check(t_shell *shell)
 			if (!tmp->next)
 			{
 				ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
+				shell->exit_status = 2;
 				break ;
 			}
 			else if (tmp->next->type != ARG)
@@ -296,6 +303,7 @@ void	syntax_check(t_shell *shell)
 				ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 				ft_putstr_fd(tmp->next->word, 2);
 				ft_putstr_fd("'\n", 2);
+				shell->exit_status = 2;
 				break ;
 			}
 			else
@@ -306,6 +314,7 @@ void	syntax_check(t_shell *shell)
 			if (!tmp->next)			
 			{
 				ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
+				shell->exit_status = 2;
 				break ;
 			}
 			else if (tmp->next->type == PIPE)
@@ -313,6 +322,7 @@ void	syntax_check(t_shell *shell)
 				ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 				ft_putstr_fd(tmp->next->word, 2);
 				ft_putstr_fd("'\n", 2);
+				shell->exit_status = 2;
 				break ;
 			}
 		}
@@ -376,6 +386,9 @@ void	group_tokens(t_shell *shell)
 			tokens = group_out(shell, tokens);
 		}
 	}
-	syntax_check(shell);
-	find_cmds(shell);
+	if (shell->groups)
+	{
+		syntax_check(shell);
+		find_cmds(shell);
+	}
 }

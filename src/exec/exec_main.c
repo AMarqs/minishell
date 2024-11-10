@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 20:14:22 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/10 19:03:18 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,8 @@ void	exec_builtin(t_shell *shell, t_group *group, int i, int child)
 	char	**args;
 
 	args = get_args(group->next);
+	// printf("args: %p", args);
+	// print_array(args);
 	if (i == 1)
 		cd(shell, args);
 	if (i == 2)
