@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/11 14:47:58 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/11 20:45:47 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ t_env	*env_values(char *env)
 	if (!tmp)
 		return (NULL); /////////////////////// ADD ERROR FUNCTION
 	new->key = tmp[0];
-	new->value = tmp[1];
+	new->value = ft_strdup(getenv(new->key));
 	new->next = NULL;
 	free (tmp);
 	return (new);
@@ -117,7 +117,7 @@ int	main(int argc, char **argv, char **envp)
 	{
 		return (1);  /////////////////////// ADD ERROR FUNCTION
 	}
-	
+	shell->path = NULL;
 	shell->envp = environ(envp);
 	char *pwd[2];
 	char *oldpwd[2];
@@ -139,7 +139,7 @@ int	main(int argc, char **argv, char **envp)
 		path[0] = "PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin";
 		path[1] = NULL;
 		export(shell, path);
-	}
+	}	
 	// if (!search_env(shell, "_"))
 	// {
 	// 	if (search_env(shell, "SHELL"))
@@ -157,6 +157,8 @@ int	main(int argc, char **argv, char **envp)
 	// 		export(shell, underscore);
 	// 	}
 	// }
+
+	
 	char *shlvl[2];
 	if (!search_env(shell, "SHLVL"))
 	{
@@ -187,10 +189,10 @@ int	main(int argc, char **argv, char **envp)
 	}
 	//shell->path = get_path(shell);
 	shell->exit_status = 0;
-	shell->path = NULL;
 	shell->tokens = NULL;
 	if (argc != 1 && ft_strcmp(argv[1], "-c") == 0)
 	{
+		shell->path = NULL;
 		char *line2 = ft_substr(argv[2], 0, ft_strlen(argv[2]) - 1);
 		shell->line = line2;
 		if (!line2)
@@ -212,6 +214,7 @@ int	main(int argc, char **argv, char **envp)
 	{
 		while (1)
 			{
+				shell->path = NULL;
 				line = readline("minishell$ ");
 				shell->line = line;
 				if (!line)
@@ -238,3 +241,5 @@ int	main(int argc, char **argv, char **envp)
 	// free_all(shell);
 	// return (i);
 }
+
+// /home/ubuntu/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin

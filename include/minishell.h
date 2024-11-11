@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/11 11:12:06 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/11 20:45:21 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ typedef struct s_env
 typedef struct s_shell
 {
 	char		*line;
-	char		**path;                //// BORRAR SI NO SE USA
+	char		*path;                //// BORRAR SI NO SE USA
 	int			exit_status;
 	int			prev_status;
 	t_token		*tokens;
@@ -162,7 +162,7 @@ void		handle_redirections(t_shell *shell, t_group *group);
 // get_stuff.c
 char		**get_args(t_group *groups);
 char		**get_envp(t_env *envp);
-char		*get_path(char **env, char *cmd);
+char		*get_path(t_shell *shell, char **env, char *cmd);
 
 // heredoc.c
 int			count_hd(t_group *groups);

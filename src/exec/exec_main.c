@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/11 15:31:55 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/11 20:45:15 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ char	**get_envp(t_env *envp)
 	return (env);
 }
 
-char	*get_path(char **env, char *cmd)
+char	*get_path(t_shell *shell, char **env, char *cmd)
 {
 	int		i;
 	char	*tmp;
@@ -174,18 +174,19 @@ char	*get_path(char **env, char *cmd)
 	{
 		if (ft_strncmp(env[i], "PATH=", 5) == 0)
 		{
+			shell->path = env[i] + 5;
 			path = ft_split(env[i] + 5, ':');
 		}
 		i++;
 	}
-	if (!path)
-	{
-		path = malloc(sizeof(char *) * 2);
-		if (!path)
-			return (NULL); /////////////////////// ADD ERROR FUNCTION
-		path[0] = ft_strdup("/bin"); /// temporal
-		path[1] = NULL;
-	}
+	// if (!path)
+	// {
+	// 	path = malloc(sizeof(char *) * 2);
+	// 	if (!path)
+	// 		return (NULL); /////////////////////// ADD ERROR FUNCTION
+	// 	path[0] = ft_strdup("/bin"); /// temporal
+	// 	path[1] = NULL;
+	// }
 	i = 0;
 	while (path[i])
 	{
@@ -253,8 +254,19 @@ void	exec_cmd(t_shell *shell, t_group *group)
 	}
 	else
 	{
-		path = get_path(env, cmd);
-		if (!path)
+		path = get_path(shell, env, cmd);
+		if (!path && !access(cmd, F_OK) && !is_directory(cmd))
+			path = cmd;
+		else if (!path && (!shell->path || !shell->path[0]))
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd, 2);
+			ft_putstr_fd(": ", 2);
+			ft_putstr_fd("No such file or directory\n", 2);
+			shell->exit_status = 127;
+			return ;
+		}
+		else if (!path)
 		{
 			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(cmd, 2);
