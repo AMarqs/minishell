@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 13:39:38 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/11 11:12:06 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,5 +175,6 @@ void		read_heredocs(t_shell *shell);
 // utils.c
 
 char		**ft_split_env(char *str, char del);
+int			ft_isspace(char c);
 
 #endif

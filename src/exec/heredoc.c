@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:56:01 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/08 18:26:51 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/11 11:13:54 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	subs_hd(t_shell *shell, char *line, int fd)
 		if (line[i] == '$')
 		{
 			i++;
-			if (line[i] == ' ' || line[i] == '\0')
+			if (ft_isspace(line[i]) || line[i] == '\0')
 			{
 				ft_putchar_fd('$', fd);
 				ft_putchar_fd(line[i], fd);

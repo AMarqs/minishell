@@ -6,11 +6,18 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 12:40:24 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 18:27:18 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/11 11:10:24 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+int	ft_isspace(char c)
+{
+	if (c == ' ' || (c >= 9 && c <= 13))
+		return (1);
+	return (0);
+}
 
 char	**ft_split_env(char *str, char del)
 {

@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:05 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 18:27:15 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/11 11:21:59 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int	token_type(char c)
 		return (D_QUOTE);
 	if (c == '$')
 		return (ENV_VAR);
-	if (c == ' ')
+	if (ft_isspace(c))
 		return (BLANK);
 	return (CHAR);
 }

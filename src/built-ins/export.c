@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 20:09:30 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/10 19:02:17 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/11 12:49:44 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,13 +128,17 @@ void	ft_split_var(t_env *new, char *value)
 
 	tmp = ft_split_env(value, '=');
 	new->key = tmp[0];
-	new->value = tmp[1];
+	if (!tmp[1] && value[ft_strlen(value) - 1] == '=')
+		new->value = ft_strdup("");
+	else
+		new->value = tmp[1];
 	free(tmp);
 }
 
 void	add_envp(t_shell *shell, t_env *new)
 {
 	t_env	*tmp;
+	t_env	*prev;
 
 	tmp = shell->envp;
 	if (!shell->envp)
@@ -142,19 +146,24 @@ void	add_envp(t_shell *shell, t_env *new)
 		shell->envp = new;
 		return ;
 	}
-	while (tmp->next)
+	while (tmp)
 	{
 		if ((ft_strcmp(tmp->key, new->key)) == 0)
 		{
-			free(tmp->value);
+			if (!new->value)
+				return ;
+			if (tmp->value)
+				free(tmp->value);
 			free(new->key);
 			tmp->value = new->value;
 			free(new);
 			return ;
 		}
+		prev = tmp;
 		tmp = tmp->next;
 	}
-	tmp->next = new;
+	if (!tmp)
+		prev->next = new;
 }
 
 int	check_export(char *args)

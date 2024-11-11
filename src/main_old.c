@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/11 13:49:51 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/10 18:15:46 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,22 +94,16 @@ t_env	*environ(char **envp)
 	return (new);
 }
 
-char	*search_env(t_shell *shell, char *key)
-{
-	t_env	*tmp;
-
-	tmp = shell->envp;
-	while (tmp)
-	{
-		if (ft_strcmp(tmp->key, key) == 0)
-			return (tmp->value);
-		tmp = tmp->next;
-	}
-	return (NULL);
-}
-
 int	main(int argc, char **argv, char **envp)
 {
+
+	if (argc > 1 || argv[1])
+	{
+		write(2, "Error: Invalid arguments\n", 25);
+		return (1);
+	}
+	
+
 	char	*line;
 	t_shell	*shell;
 	shell = malloc(sizeof(t_shell));
@@ -119,72 +113,25 @@ int	main(int argc, char **argv, char **envp)
 	}
 	
 	shell->envp = environ(envp);
-	char *pwd[2];
+
 	char *oldpwd[2];
-	if (!search_env(shell, "PWD"))
-	{
-		pwd[0] = ft_strjoin("PWD=", getcwd(NULL, 0));
-		pwd[1] = NULL;
-		export(shell, pwd);
-	}
-	if (!search_env(shell, "OLDPWD"))
-	{
-		oldpwd[0] = "OLDPWD";
-		oldpwd[1] = NULL;
-		export(shell, oldpwd);
-	}
-	if (!search_env(shell, "PATH"))
-	{
-		char *path[2];
-		path[0] = "PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin";
-		path[1] = NULL;
-		export(shell, path);
-	}
-	// if (!search_env(shell, "_"))
-	// {
-	// 	if (search_env(shell, "SHELL"))
-	// 	{
-	// 		char *underscore[2];
-	// 		underscore[0] = ft_strjoin("_=", search_env(shell, "SHELL"));
-	// 		underscore[1] = NULL;
-	// 		export(shell, underscore);
-	// 	}
-	// 	else
-	// 	{
-	// 		char *underscore[2];
-	// 		underscore[0] = "_=./minishell";
-	// 		underscore[1] = NULL;
-	// 		export(shell, underscore);
-	// 	}
-	// }
-	char *shlvl[2];
-	if (!search_env(shell, "SHLVL"))
-	{
-		shlvl[0] = "SHLVL=1";
-		shlvl[1] = NULL;
-		export(shell, shlvl);
-	}
-	else
-	{
-		int i = ft_atoi(search_env(shell, "SHLVL")) + 1;
-		shlvl[0] = ft_strjoin("SHLVL=", ft_itoa(i));
-		shlvl[1] = NULL;
-		export(shell, shlvl);
-	}
+	oldpwd[0] = "OLDPWD";
+	oldpwd[1] = NULL;
+	export(shell, oldpwd);
 	//shell->path = get_path(shell);
 	shell->exit_status = 0;
 	shell->path = NULL;
 	shell->tokens = NULL;
-	if (argc != 1 && ft_strcmp(argv[1], "-c") == 0)
+	while (1)
 	{
-		char *line2 = ft_substr(argv[2], 0, ft_strlen(argv[2]) - 1);
-		shell->line = line2;
-		if (!line2)
-			return (shell->exit_status);
-		if (line2[0] != '\0')
+		line = readline("minishell$ ");
+		shell->line = line;
+		if (!line)
+			break ;
+		if (line[0] != '\0')
 		{
 			shell->exit_status = 0;
-			add_history(line2);
+			add_history(line);
 			parse_line(shell);
 			group_tokens(shell);
 			//print_groups(shell->groups);
@@ -193,33 +140,9 @@ int	main(int argc, char **argv, char **envp)
 			shell->prev_status = shell->exit_status;
 			//free_all(shell);
 		}
+		free(line);
 	}
-	else
-	{
-		while (1)
-			{
-				line = readline("minishell$ ");
-				shell->line = line;
-				if (!line)
-					break ;
-				if (line[0] != '\0')
-				{
-					shell->exit_status = 0;
-					add_history(line);
-					parse_line(shell);
-					group_tokens(shell);
-					//print_groups(shell->groups);
-					//printf("exit_status: %d\n", shell->exit_status);
-					if (shell->groups && shell->exit_status == 0)
-						exec_everything(shell);
-					shell->prev_status = shell->exit_status;
-					//free_all(shell);
-				}
-				free(line);
-			}
-		}
 	rl_clear_history();
-	return (shell->exit_status);
 	// int i = shell->exit_status;
 	// free_all(shell);
 	// return (i);

@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/10 19:03:18 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/11 13:59:56 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,9 @@ void	exec_builtin(t_shell *shell, t_group *group, int i, int child)
 {
 	char	**args;
 
+	while (group && group->type != CMD)
+		group = group->next;
 	args = get_args(group->next);
-	// printf("args: %p", args);
-	// print_array(args);
 	if (i == 1)
 		cd(shell, args);
 	if (i == 2)
@@ -212,7 +212,7 @@ void	exec_cmd(t_shell *shell, t_group *group)
 	cmd = find_cmd(group);
 	if (!cmd)
 		return ;
-	i = is_builtin(group->word);
+	i = is_builtin(cmd);
 	if (i)
 	{
 		exec_builtin(shell, group, i, 0);
@@ -220,8 +220,8 @@ void	exec_cmd(t_shell *shell, t_group *group)
 	}
 	args = get_args(group);
 	env = get_envp(shell->envp);
-
-	if ((cmd[0] == '.' && cmd[1] == '/') || cmd[0] == '/')
+	if ((cmd[0] == '.' && cmd[1] == '/') || cmd[0] == '/'
+		|| cmd[ft_strlen(cmd) - 1] == '/')
 	{
 		if (access(cmd, F_OK))
 		{
@@ -256,7 +256,7 @@ void	exec_cmd(t_shell *shell, t_group *group)
 		}
 		cmd = path;
 	}
-	if (access(cmd, X_OK))
+	if (access(cmd, X_OK | R_OK))
 	{
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd, 2);
@@ -272,7 +272,6 @@ void	exec_cmd(t_shell *shell, t_group *group)
 void	exec_block(t_shell *shell, t_group *group)
 {
 	handle_redirections(shell, group);
-	fflush(stdout);
 	if (shell->exit_status)
 		return ;
 	exec_cmd(shell, group);
@@ -315,10 +314,15 @@ void	exec_everything(t_shell *shell)
 	char	*cmd;
 
 	group = shell->groups;
+	save_restore_fds(0);
 	cmd = find_cmd(group);
 	if (!cmd)
+	{
+		if (group)
+			handle_redirections(shell, group);
+		save_restore_fds(1);
 		return ;
-	save_restore_fds(0);
+	}
 	read_heredocs(shell);
 	prev_fd = -1;
 	pipe_n = count_pipes(shell->groups);
@@ -348,7 +352,6 @@ void	exec_everything(t_shell *shell)
 					close(pipe_fd[0]);
 				redirect_pipes(prev_fd, pipe_fd[1]);
 				exec_block(shell, group);
-				//write(1, "minishell: command not found\n", 29);
 				exit(shell->exit_status);
 			}
 			else if (pids[i] < 0)

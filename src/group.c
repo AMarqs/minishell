@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/10 18:28:07 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/11 11:12:50 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,9 +110,57 @@ char	*better_strjoin(char const *s1, char const *s2)
 	return (str);
 }
 
+void	add_args_group(t_shell *shell, char *str)
+{
+	t_group	*tmp;
+	t_group	*new;
+
+	tmp = shell->groups;
+	new = new_group();
+	if (!new)
+		return ; /////////////////////// ADD ERROR FUNCTION
+	new->word = str;
+	new->type = ARG;
+	if (!shell->groups)
+	{
+		shell->groups = new;
+		return ;
+	}
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = new;
+}
+
+char	*space_split(t_shell *shell, char *str, char *new)
+{
+	int		i;
+	int		j;
+	char	*aux;
+	
+	i = 0;
+	while (new[i])
+	{
+		j = i;
+		while (new[i] && !ft_isspace(new[i]))
+			i++;
+		if (i > j)
+		{
+			aux = ft_substr(new, j, i - j);
+			str = better_strjoin(str, aux);
+			free(aux);
+		}
+		if (new[i] && ft_isspace(new[i]) && str)
+		{
+			add_args_group(shell, str);
+			str = NULL;
+		}
+		i++;
+	}
+	return (str);
+}
+
 t_token	*group_chars(t_shell *shell, t_token *tokens)
 {
-	t_group	*new;
 	t_token	*tmp;
 	char	*str;
 	char	aux[2];
@@ -130,11 +178,17 @@ t_token	*group_chars(t_shell *shell, t_token *tokens)
 			str = better_strjoin(str, aux);
 			tmp = tmp->next;
 		}
-		if (tmp && (tmp->type == ENV_VAR || tmp->type == ENV_VAR_Q))
+		if (tmp && tmp->type == ENV_VAR_Q)
 		{
 			aux2 = subs_var(shell, &tmp);
 			if (aux2)
 				str = better_strjoin(str, aux2);
+		}
+		if (tmp && tmp->type == ENV_VAR)
+		{
+			aux2 = subs_var(shell, &tmp);
+			if (aux2)
+				str = space_split(shell, str, aux2);
 		}
 		if (tmp && tmp->type == EMPTY)
 		{
@@ -145,12 +199,7 @@ t_token	*group_chars(t_shell *shell, t_token *tokens)
 	tokens = tmp;
 	if (!str)
 		return (tokens);
-	new = new_group();
-	if (!new)
-		return (NULL); /////////////////////// ADD ERROR FUNCTION
-	add_group(shell, new);
-	new->word = str;
-	new->type = ARG;
+	add_args_group(shell, str);
 	return (tokens);
 }
 

@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 14:01:08 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/08 18:26:58 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/11 13:32:58 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	output_redirection(t_shell *shell, char *file)
 {
 	int	fd;
 
-	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0700);
 	if (fd < 0)
 	{
 		ft_putstr_fd("minishell: ", 2);
