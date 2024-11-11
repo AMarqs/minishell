@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/11 13:59:56 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/11 15:31:55 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,7 @@ void	exec_cmd(t_shell *shell, t_group *group)
 	args = get_args(group);
 	env = get_envp(shell->envp);
 	if ((cmd[0] == '.' && cmd[1] == '/') || cmd[0] == '/'
-		|| cmd[ft_strlen(cmd) - 1] == '/')
+		|| cmd[ft_strlen(cmd) - 1] == '/' || ft_strnstr(cmd, "/", ft_strlen(cmd)))
 	{
 		if (access(cmd, F_OK))
 		{
@@ -241,6 +241,15 @@ void	exec_cmd(t_shell *shell, t_group *group)
 			shell->exit_status = 126;
 			return ;
 		}
+		if (access(cmd, X_OK | R_OK))
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd, 2);
+			ft_putstr_fd(": ", 2);
+			perror("");
+			shell->exit_status = 126;
+			return ;
+		}
 	}
 	else
 	{
@@ -256,13 +265,22 @@ void	exec_cmd(t_shell *shell, t_group *group)
 		}
 		cmd = path;
 	}
-	if (access(cmd, X_OK | R_OK))
+	if (access(cmd, X_OK))
 	{
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd, 2);
 		ft_putstr_fd(": ", 2);
 		perror("");
 		shell->exit_status = 126;
+		return ;
+	}
+	if (access(cmd, R_OK))
+	{
+		ft_putstr_fd("/bin/sh: 0: cannot open ", 2);
+		ft_putstr_fd(cmd, 2);
+		ft_putstr_fd(": ", 2);
+		perror("");
+		shell->exit_status = 2;
 		return ;
 	}
 	execve(cmd, args, env);

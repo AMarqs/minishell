@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/11 13:49:51 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/11 14:47:58 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,9 +166,23 @@ int	main(int argc, char **argv, char **envp)
 	}
 	else
 	{
-		int i = ft_atoi(search_env(shell, "SHLVL")) + 1;
-		shlvl[0] = ft_strjoin("SHLVL=", ft_itoa(i));
+		int i = ft_atoi(search_env(shell, "SHLVL"));
+		if (i < -1 || i == INT_MAX)
+			i = 0;
+		else
+			i++;
+		char *aux = ft_itoa(i);
+		if (i > 2000000)
+		{
+			i = 1;
+			ft_putstr_fd("minishell: warning: shell level (", 2);
+			ft_putstr_fd(aux, 2);
+			ft_putstr_fd(") too high, resetting to 1\n", 2);
+		}
+		aux = ft_itoa(i);
+		shlvl[0] = ft_strjoin("SHLVL=", aux);
 		shlvl[1] = NULL;
+		free(aux);
 		export(shell, shlvl);
 	}
 	//shell->path = get_path(shell);
