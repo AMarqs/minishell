@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/12 18:25:09 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/12 18:30:19 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -384,7 +384,7 @@ void	syntax_check(t_shell *shell)
 				ft_putstr_fd("minishell: ", 2);
 				print_ambiguous(tmp->first_token);
 				ft_putstr_fd(": ambiguous redirect\n", 2);
-				shell->exit_status = 2;
+				shell->exit_status = 1;
 			}
 			else
 				tmp->next->type = FILENAME;
