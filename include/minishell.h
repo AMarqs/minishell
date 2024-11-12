@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/12 13:43:16 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/12 18:13:16 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ typedef struct s_group
 	enum e_words	type;
 	char			*word;
 	int				is_var;
+	struct s_token	*first_token;
 	struct s_group	*next;
 }					t_group;
 

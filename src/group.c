@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/12 14:26:37 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/12 18:25:09 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,10 @@ char	*space_split(t_shell *shell, char *str, char *new, int *is_var)
 		}
 		i++;
 	}
+	if (!str)
+		*is_var = 0;
+	if (new[i - 1] == ' ')
+		*is_var = 1;
 	return (str);
 }
 
@@ -193,8 +197,6 @@ t_token	*group_chars(t_shell *shell, t_token *tokens)
 			aux2 = subs_var(shell, &tmp);
 			if (aux2)
 				str = space_split(shell, str, aux2, &is_var);
-			if (!str)
-				is_var = 0;
 		}
 		if (tmp && tmp->type == EMPTY)
 		{
@@ -266,6 +268,7 @@ t_token	*group_in(t_shell *shell, t_token *tokens)
 	add_group(shell, new);
 	new->type = REDIR_IN;
 	new->word = ft_strdup("<"); // se puede quitar
+	new->first_token = tmp;
 	if (tmp->next && tmp->next->type == CHAR_IN)
 	{
 		new->type = REDIR_HD;
@@ -306,6 +309,7 @@ t_token	*group_out(t_shell *shell, t_token *tokens)
 	add_group(shell, new);
 	new->type = REDIR_OUT;
 	new->word = ft_strdup(">"); // se puede quitar
+	new->first_token = tmp;
 	if (tmp->next && tmp->next->type == CHAR_OUT)
 	{
 		new->type = REDIR_APPEND;
@@ -329,6 +333,20 @@ t_token	*group_out(t_shell *shell, t_token *tokens)
 	}
 	tokens = aux;
 	return (tokens);
+}
+
+void	print_ambiguous(t_token *token)
+{
+	t_token	*tmp;
+	
+	tmp = token;
+	while (tmp->type != CHAR && tmp->type != ENV_VAR && tmp->type != ENV_VAR_Q)
+		tmp = tmp->next;
+	while (tmp && (tmp->type == CHAR || tmp->type == ENV_VAR || tmp->type == ENV_VAR_Q))
+	{
+		ft_putchar_fd(tmp->value, 2);
+		tmp = tmp->next;
+	}
 }
 
 void	syntax_check(t_shell *shell)
@@ -361,9 +379,12 @@ void	syntax_check(t_shell *shell)
 				shell->exit_status = 2;
 				break ;
 			}
-			else if (tmp->next->is_var)
+			else if (tmp->next->is_var && tmp->next->next && tmp->next->next->is_var)
 			{
-				
+				ft_putstr_fd("minishell: ", 2);
+				print_ambiguous(tmp->first_token);
+				ft_putstr_fd(": ambiguous redirect\n", 2);
+				shell->exit_status = 2;
 			}
 			else
 				tmp->next->type = FILENAME;
