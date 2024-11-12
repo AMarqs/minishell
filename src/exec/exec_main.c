@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/11 20:45:15 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/12 13:04:19 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,14 +179,10 @@ char	*get_path(t_shell *shell, char **env, char *cmd)
 		}
 		i++;
 	}
-	// if (!path)
-	// {
-	// 	path = malloc(sizeof(char *) * 2);
-	// 	if (!path)
-	// 		return (NULL); /////////////////////// ADD ERROR FUNCTION
-	// 	path[0] = ft_strdup("/bin"); /// temporal
-	// 	path[1] = NULL;
-	// }
+	if (!path)
+	{
+		return (NULL);
+	}
 	i = 0;
 	while (path[i])
 	{
@@ -202,13 +198,38 @@ char	*get_path(t_shell *shell, char **env, char *cmd)
 	return (NULL);
 }
 
+int	check_path(char *path)
+{	
+	int	i;
+
+	i = 1;
+	if (!path)
+		return (0);
+	if (path[0] == '\0')
+		return (0);
+	if (path[0] == ':')
+		return (2);
+	while (path[i])
+	{
+		if (path[i] == ':')
+		{
+			if (path[i + 1] == '\0')
+				return (2);
+			if (path[i + 1] == ':')
+				return (2);
+		}
+		i++;
+	}
+	return (1);
+}
+
 void	exec_cmd(t_shell *shell, t_group *group)
 {
 	int		i;
 	char	**args;
 	char	*cmd;
 	char	**env;
-	char	*path;
+	char	*found;
 	
 	cmd = find_cmd(group);
 	if (!cmd)
@@ -254,19 +275,42 @@ void	exec_cmd(t_shell *shell, t_group *group)
 	}
 	else
 	{
-		path = get_path(shell, env, cmd);
-		if (!path && !access(cmd, F_OK) && !is_directory(cmd))
-			path = cmd;
-		else if (!path && (!shell->path || !shell->path[0]))
+		found = get_path(shell, env, cmd);
+		int x = check_path(shell->path);
+		if (x == 0 && !found)
 		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd, 2);
-			ft_putstr_fd(": ", 2);
-			ft_putstr_fd("No such file or directory\n", 2);
-			shell->exit_status = 127;
-			return ;
+			if (access(cmd, F_OK))
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd, 2);
+				ft_putstr_fd(": ", 2);
+				ft_putstr_fd("No such file or directory\n", 2);
+				shell->exit_status = 127;
+				return ;
+			}
+			else if (is_directory(cmd))
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd, 2);
+				ft_putstr_fd(": ", 2);
+				ft_putstr_fd("Is a directory\n", 2);
+				shell->exit_status = 126;
+				return ;
+			}
 		}
-		else if (!path)
+		else if (!found && x == 2)
+		{
+			if (access(cmd, F_OK))
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd, 2);
+				ft_putstr_fd(": ", 2);
+				ft_putstr_fd("command not found\n", 2);
+				shell->exit_status = 127;
+				return ;
+			}
+		}
+		else if (!found || (!found && access(cmd, F_OK)))
 		{
 			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(cmd, 2);
@@ -275,23 +319,24 @@ void	exec_cmd(t_shell *shell, t_group *group)
 			shell->exit_status = 127;
 			return ;
 		}
-		cmd = path;
+		else
+			cmd = found;
 	}
 	if (access(cmd, X_OK))
 	{
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd, 2);
 		ft_putstr_fd(": ", 2);
-		perror("");
+		perror("");  // Permission denied
 		shell->exit_status = 126;
 		return ;
 	}
 	if (access(cmd, R_OK))
 	{
-		ft_putstr_fd("/bin/sh: 0: cannot open ", 2);
+		ft_putstr_fd("/bin/sh: 0: cannot open ", 2);  // CAMBIAR POR MINISHELL: 0 ???
 		ft_putstr_fd(cmd, 2);
 		ft_putstr_fd(": ", 2);
-		perror("");
+		perror("");  // Permission denied
 		shell->exit_status = 2;
 		return ;
 	}

@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/11 20:45:47 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/12 13:54:13 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	print_groups(t_group *groups) /////// BORRAR FUNCION
 		write(1, "groups is NULL\n", 15);
 	while (tmp)
 	{
-		printf("group_type: %d, word: %s\n", tmp->type, tmp->word);
+		printf("group_type: %d, word: %s is_var: %d\n", tmp->type, tmp->word, tmp->is_var);
 		fflush(stdout);
 		tmp = tmp->next;
 	}
@@ -225,7 +225,8 @@ int	main(int argc, char **argv, char **envp)
 					add_history(line);
 					parse_line(shell);
 					group_tokens(shell);
-					//print_groups(shell->groups);
+					print_groups(shell->groups);
+					//printf("exit_status: %d\n", shell->exit_status);
 					//printf("exit_status: %d\n", shell->exit_status);
 					if (shell->groups && shell->exit_status == 0)
 						exec_everything(shell);

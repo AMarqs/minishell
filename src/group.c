@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/11 11:12:50 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/12 14:26:37 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ char	*better_strjoin(char const *s1, char const *s2)
 	return (str);
 }
 
-void	add_args_group(t_shell *shell, char *str)
+void	add_args_group(t_shell *shell, char *str, int is_var)
 {
 	t_group	*tmp;
 	t_group	*new;
@@ -121,6 +121,7 @@ void	add_args_group(t_shell *shell, char *str)
 		return ; /////////////////////// ADD ERROR FUNCTION
 	new->word = str;
 	new->type = ARG;
+	new->is_var = is_var;
 	if (!shell->groups)
 	{
 		shell->groups = new;
@@ -131,7 +132,7 @@ void	add_args_group(t_shell *shell, char *str)
 	tmp->next = new;
 }
 
-char	*space_split(t_shell *shell, char *str, char *new)
+char	*space_split(t_shell *shell, char *str, char *new, int *is_var)
 {
 	int		i;
 	int		j;
@@ -151,8 +152,9 @@ char	*space_split(t_shell *shell, char *str, char *new)
 		}
 		if (new[i] && ft_isspace(new[i]) && str)
 		{
-			add_args_group(shell, str);
+			add_args_group(shell, str, 1);
 			str = NULL;
+			*is_var = 1;
 		}
 		i++;
 	}
@@ -165,9 +167,11 @@ t_token	*group_chars(t_shell *shell, t_token *tokens)
 	char	*str;
 	char	aux[2];
 	char	*aux2;
+	int		is_var;
 
 	tmp = tokens;
 	str = NULL;
+	is_var = 0;
 	while (tmp && (tmp->type == CHAR || tmp->type == ENV_VAR
 			|| tmp->type == ENV_VAR_Q || tmp->type == EMPTY))
 	{
@@ -188,7 +192,9 @@ t_token	*group_chars(t_shell *shell, t_token *tokens)
 		{
 			aux2 = subs_var(shell, &tmp);
 			if (aux2)
-				str = space_split(shell, str, aux2);
+				str = space_split(shell, str, aux2, &is_var);
+			if (!str)
+				is_var = 0;
 		}
 		if (tmp && tmp->type == EMPTY)
 		{
@@ -199,7 +205,7 @@ t_token	*group_chars(t_shell *shell, t_token *tokens)
 	tokens = tmp;
 	if (!str)
 		return (tokens);
-	add_args_group(shell, str);
+	add_args_group(shell, str, is_var);
 	return (tokens);
 }
 
@@ -270,7 +276,7 @@ t_token	*group_in(t_shell *shell, t_token *tokens)
 	aux = tmp;
 	while (tmp)
 	{
-		if (tmp->type == CHAR || tmp->type == ENV_VAR)
+		if (tmp->type == CHAR || tmp->type == ENV_VAR || tmp->type == ENV_VAR_Q)
 		{
 			ok = 1;
 		}
@@ -310,7 +316,7 @@ t_token	*group_out(t_shell *shell, t_token *tokens)
 	aux = tmp;
 	while (tmp)
 	{
-		if (tmp->type == CHAR || tmp->type == ENV_VAR)
+		if (tmp->type == CHAR || tmp->type == ENV_VAR || tmp->type == ENV_VAR_Q)
 		{
 			ok = 1;
 		}
@@ -354,6 +360,10 @@ void	syntax_check(t_shell *shell)
 				ft_putstr_fd("'\n", 2);
 				shell->exit_status = 2;
 				break ;
+			}
+			else if (tmp->next->is_var)
+			{
+				
 			}
 			else
 				tmp->next->type = FILENAME;
