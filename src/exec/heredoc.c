@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:56:01 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/12 17:56:18 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/13 18:22:10 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ void	create_heredoc(t_shell *shell, char *word, int hd_num)
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || (ft_strcmp(line, word) == 0))
+		if (!line || (ft_strcmp(line, word) == 0) || g_signal == SIGINT)
 		{
 			free(line);
 			break ;
@@ -131,6 +131,7 @@ void	read_heredocs(t_shell *shell)
 	t_group	*tmp;
 	int		hd_num;
 
+	init_signal_hd();
 	hd_num = 0;
 	tmp = shell->groups;
 	while (tmp)

@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/13 14:10:30 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/13 18:27:48 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -399,58 +399,62 @@ void	exec_everything(t_shell *shell)
 		return ;
 	}
 	read_heredocs(shell);
-	prev_fd = -1;
-	pipe_n = count_pipes(shell->groups);
-	pids = malloc(sizeof(int) * (pipe_n + 1));
-	i = 0;
-	if (pipe_n == 0 && is_builtin(cmd))
+	if (g_signal != SIGINT)
 	{
-		exec_block(shell, group);
-	}
-	else
-	{
-		while (i <= pipe_n)
-		{
-			if (i < pipe_n)
-			{
-				pipe(pipe_fd);
-			}
-			else
-			{
-				pipe_fd[0] = -1;
-				pipe_fd[1] = -1;
-			}
-			pids[i] = fork();
-			if (pids[i] == 0)
-			{
-				if (pipe_fd[0] >= 0)
-					close(pipe_fd[0]);
-				redirect_pipes(prev_fd, pipe_fd[1]);
-				exec_block(shell, group);
-				exit(shell->exit_status);
-			}
-			else if (pids[i] < 0)
-			{
-				perror("fork");
-				shell->exit_status = 1;
-			}
-			if (prev_fd != -1) 
-				close(prev_fd); // Close previous read end in parent
-			if (pipe_fd[1] != -1) 
-				close(pipe_fd[1]); // Close write end in parent
-			advance_group(&group);
-			prev_fd = pipe_fd[0];
-			i++;
-		}
+		init_signal();
+		prev_fd = -1;
+		pipe_n = count_pipes(shell->groups);
+		pids = malloc(sizeof(int) * (pipe_n + 1));
 		i = 0;
-		while (i <= pipe_n)
+		if (pipe_n == 0 && is_builtin(cmd))
 		{
-			waitpid(pids[i], &shell->exit_status, 0);
-			if (WIFEXITED(shell->exit_status))
-				shell->exit_status = WEXITSTATUS(shell->exit_status);
-			i++;
+			exec_block(shell, group);
 		}
+		else
+		{
+			while (i <= pipe_n)
+			{
+				if (i < pipe_n)
+				{
+					pipe(pipe_fd);
+				}
+				else
+				{
+					pipe_fd[0] = -1;
+					pipe_fd[1] = -1;
+				}
+				pids[i] = fork();
+				if (pids[i] == 0)
+				{
+					if (pipe_fd[0] >= 0)
+						close(pipe_fd[0]);
+					redirect_pipes(prev_fd, pipe_fd[1]);
+					exec_block(shell, group);
+					exit(shell->exit_status);
+				}
+				else if (pids[i] < 0)
+				{
+					perror("fork");
+					shell->exit_status = 1;
+				}
+				if (prev_fd != -1) 
+					close(prev_fd); // Close previous read end in parent
+				if (pipe_fd[1] != -1) 
+					close(pipe_fd[1]); // Close write end in parent
+				advance_group(&group);
+				prev_fd = pipe_fd[0];
+				i++;
+			}
+			i = 0;
+			while (i <= pipe_n)
+			{
+				waitpid(pids[i], &shell->exit_status, 0);
+				if (WIFEXITED(shell->exit_status))
+					shell->exit_status = WEXITSTATUS(shell->exit_status);
+				i++;
+			}
+		}
+		free(pids);
+		save_restore_fds(1);
 	}
-	free(pids);
-	save_restore_fds(1);
 }
