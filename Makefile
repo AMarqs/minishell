@@ -4,23 +4,25 @@ LIBFT = ./libft
 HEADERS = -I $(LIBFT)
 LIBRARIES = $(LIBFT)/libft.a
 
-SRCS = main.c \
-	parse.c \
-	group.c \
-	built-ins/export.c \
-	built-ins/unset.c \
-	built-ins/env.c \
-	built-ins/pwd.c \
-	built-ins/cd.c \
-	built-ins/echo.c \
-	built-ins/exit.c \
-	exec/exec_main.c \
-	free_errors.c \
-	exec/fd_handler.c \
-	exec/redirections.c \
-	exec/heredoc.c \
-	signals/signal.c \
-	utils.c
+SRCS = 	main.c \
+		parse.c \
+		group.c \
+		utils.c \
+		free_errors.c \
+		built-ins/export.c \
+		built-ins/unset.c \
+		built-ins/env.c \
+		built-ins/pwd.c \
+		built-ins/cd.c \
+		built-ins/echo.c \
+		built-ins/exit.c \
+		exec/exec_main.c \
+		exec/fd_handler.c \
+		exec/redirections.c \
+		exec/heredoc.c \
+		signals/signal_init.c \
+		signals/signal_handler.c \
+		signals/signal_utils.c
 
 SRC = $(addprefix src/, $(SRCS))
 OBJ = $(SRC:.c=.o)

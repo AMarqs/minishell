@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/12 18:13:16 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/13 13:56:49 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,10 @@
 # include <sys/ioctl.h>
 # include <sys/wait.h>
 
-// DEFINES
+// Global Variable
+extern volatile sig_atomic_t	g_signal;
+
+// DEFINES structures
 
 // TOKENS
 
@@ -175,8 +178,23 @@ void		read_heredocs(t_shell *shell);
 // SRC
 
 // utils.c
-
 char		**ft_split_env(char *str, char del);
 int			ft_isspace(char c);
+
+// SIGNALS
+
+// signal_init.c
+void		init_signal(void);
+void		init_signal_hd(void);
+void		init_signal_quit(void);
+
+// signal_handler.c
+void		signal_handler(int signal);
+void		signal_hd(int signal);
+void		signal_quit(int signal);
+
+// signal_utils.c
+void		disable_echoctl(void);
+
 
 #endif

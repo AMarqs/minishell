@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/13 12:25:45 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/13 14:08:37 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+volatile sig_atomic_t	g_signal;
 
 void	print_array(char **array) /////// BORRAR FUNCION
 {
@@ -108,22 +110,6 @@ char	*search_env(t_shell *shell, char *key)
 	return (NULL);
 }
 
-static void disable_echoctl(void) 
-{
-    struct termios term;
-
-    // Get the current terminal attributes
-    if (tcgetattr(STDIN_FILENO, &term) == -1)
-	{
-		exit(EXIT_FAILURE);
-	}
-	term.c_lflag &= ~ECHOCTL;
-	if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
-	{
-		exit(EXIT_FAILURE);
-	}
-}
-
 int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
@@ -133,8 +119,14 @@ int	main(int argc, char **argv, char **envp)
 	{
 		return (1);  /////////////////////// ADD ERROR FUNCTION
 	}
-	shell->path = NULL;
+	//shell->path = get_path(shell);
+	//shell->path = NULL;
 	shell->envp = environ(envp);
+	shell->tokens = NULL;
+	shell->exit_status = 0;
+	init_signal();
+	disable_echoctl();
+	// rl_event_hook = event_hook_readline; // NO HACE NADA (?)
 	char *pwd[2];
 	char *oldpwd[2];
 	if (!search_env(shell, "PWD"))
@@ -155,26 +147,7 @@ int	main(int argc, char **argv, char **envp)
 		path[0] = "PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin";
 		path[1] = NULL;
 		export(shell, path);
-	}	
-	// if (!search_env(shell, "_"))
-	// {
-	// 	if (search_env(shell, "SHELL"))
-	// 	{
-	// 		char *underscore[2];
-	// 		underscore[0] = ft_strjoin("_=", search_env(shell, "SHELL"));
-	// 		underscore[1] = NULL;
-	// 		export(shell, underscore);
-	// 	}
-	// 	else
-	// 	{
-	// 		char *underscore[2];
-	// 		underscore[0] = "_=./minishell";
-	// 		underscore[1] = NULL;
-	// 		export(shell, underscore);
-	// 	}
-	// }
-
-	
+	}
 	char *shlvl[2];
 	if (!search_env(shell, "SHLVL"))
 	{
@@ -203,9 +176,24 @@ int	main(int argc, char **argv, char **envp)
 		free(aux);
 		export(shell, shlvl);
 	}
-	//shell->path = get_path(shell);
-	shell->exit_status = 0;
-	shell->tokens = NULL;
+	// if (!search_env(shell, "_"))
+	// {
+	// 	if (search_env(shell, "SHELL"))
+	// 	{
+	// 		char *underscore[2];
+	// 		underscore[0] = ft_strjoin("_=", search_env(shell, "SHELL"));
+	// 		underscore[1] = NULL;
+	// 		export(shell, underscore);
+	// 	}
+	// 	else
+	// 	{
+	// 		char *underscore[2];
+	// 		underscore[0] = "_=./minishell";
+	// 		underscore[1] = NULL;
+	// 		export(shell, underscore);
+	// 	}
+	// }
+
 	if (argc != 1 && ft_strcmp(argv[1], "-c") == 0)
 	{
 		shell->path = NULL;
@@ -216,7 +204,6 @@ int	main(int argc, char **argv, char **envp)
 		if (line2[0] != '\0')
 		{
 			shell->exit_status = 0;
-			add_history(line2);
 			parse_line(shell);
 			group_tokens(shell);
 			//print_groups(shell->groups);
@@ -229,29 +216,29 @@ int	main(int argc, char **argv, char **envp)
 	else
 	{
 		while (1)
+		{
+			shell->path = NULL;
+			line = readline("minishell$ ");
+			//disable_echoctl();
+			shell->line = line;
+			if (!line)
+				break ;
+			if (line[0] != '\0')
 			{
-				shell->path = NULL;
-				line = readline("minishell$ ");
-				disable_echoctl();
-				shell->line = line;
-				if (!line)
-					break ;
-				if (line[0] != '\0')
-				{
-					shell->exit_status = 0;
-					add_history(line);
-					parse_line(shell);
-					group_tokens(shell);
-					//print_groups(shell->groups);
-					//printf("exit_status: %d\n", shell->exit_status);
-					if (shell->groups && shell->exit_status == 0)
-						exec_everything(shell);
-					shell->prev_status = shell->exit_status;
-					//free_all(shell);
-				}
-				free(line);
+				shell->exit_status = 0;
+				add_history(line);
+				parse_line(shell);
+				group_tokens(shell);
+				//print_groups(shell->groups);
+				//printf("exit_status: %d\n", shell->exit_status);
+				if (shell->groups && shell->exit_status == 0)
+					exec_everything(shell);
+				shell->prev_status = shell->exit_status;
+				//free_all(shell);
 			}
+			free(line);
 		}
+	}
 	rl_clear_history();
 	return (shell->exit_status);
 	// int i = shell->exit_status;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_main.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/12 17:56:21 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/13 14:10:30 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -382,10 +382,10 @@ void	exec_everything(t_shell *shell)
 {
 	int		pipe_n;
 	int		i;
-	int pipe_fd[2];
-	int prev_fd;
+	int 	pipe_fd[2];
+	int 	prev_fd;
 	t_group *group;
-	int	*pids;
+	int		*pids;
 	char	*cmd;
 
 	group = shell->groups;
