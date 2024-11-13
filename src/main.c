@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/12 18:05:38 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/13 12:25:45 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,22 @@ char	*search_env(t_shell *shell, char *key)
 		tmp = tmp->next;
 	}
 	return (NULL);
+}
+
+static void disable_echoctl(void) 
+{
+    struct termios term;
+
+    // Get the current terminal attributes
+    if (tcgetattr(STDIN_FILENO, &term) == -1)
+	{
+		exit(EXIT_FAILURE);
+	}
+	term.c_lflag &= ~ECHOCTL;
+	if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
+	{
+		exit(EXIT_FAILURE);
+	}
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -216,6 +232,7 @@ int	main(int argc, char **argv, char **envp)
 			{
 				shell->path = NULL;
 				line = readline("minishell$ ");
+				disable_echoctl();
 				shell->line = line;
 				if (!line)
 					break ;
