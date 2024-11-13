@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/13 18:27:48 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/13 19:31:18 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -401,7 +401,7 @@ void	exec_everything(t_shell *shell)
 	read_heredocs(shell);
 	if (g_signal != SIGINT)
 	{
-		init_signal();
+		init_signal_quit();
 		prev_fd = -1;
 		pipe_n = count_pipes(shell->groups);
 		pids = malloc(sizeof(int) * (pipe_n + 1));
@@ -426,6 +426,8 @@ void	exec_everything(t_shell *shell)
 				pids[i] = fork();
 				if (pids[i] == 0)
 				{
+					signal(SIGINT, SIG_DFL);
+					signal(SIGQUIT, SIG_DFL); 
 					if (pipe_fd[0] >= 0)
 						close(pipe_fd[0]);
 					redirect_pipes(prev_fd, pipe_fd[1]);
@@ -455,6 +457,7 @@ void	exec_everything(t_shell *shell)
 			}
 		}
 		free(pids);
-		save_restore_fds(1);
 	}
+	init_signal();
+	save_restore_fds(1);
 }

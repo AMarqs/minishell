@@ -6,13 +6,18 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/13 14:08:37 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/13 19:07:21 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
 volatile sig_atomic_t	g_signal;
+
+int	event_hook_readline(void)
+{
+	return (0);
+}
 
 void	print_array(char **array) /////// BORRAR FUNCION
 {
@@ -126,7 +131,7 @@ int	main(int argc, char **argv, char **envp)
 	shell->exit_status = 0;
 	init_signal();
 	disable_echoctl();
-	// rl_event_hook = event_hook_readline; // NO HACE NADA (?)
+	rl_event_hook = event_hook_readline;
 	char *pwd[2];
 	char *oldpwd[2];
 	if (!search_env(shell, "PWD"))

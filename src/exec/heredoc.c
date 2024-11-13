@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:56:01 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/13 18:22:10 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/13 19:21:30 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,13 @@ void	create_heredoc(t_shell *shell, char *word, int hd_num)
 		free(line);
 	}
 	close(fd);
+	if (!line)
+	{
+		ft_putstr_fd("minishell: warning: here-document ", STDERR_FILENO);
+		ft_putstr_fd("delimited by end-of-file (wanted `", STDERR_FILENO);
+		ft_putstr_fd(word, STDERR_FILENO);
+		ft_putendl_fd("')", STDERR_FILENO);
+	}
 }
 
 void	read_heredocs(t_shell *shell)
@@ -134,7 +141,7 @@ void	read_heredocs(t_shell *shell)
 	init_signal_hd();
 	hd_num = 0;
 	tmp = shell->groups;
-	while (tmp)
+	while (tmp && g_signal != SIGINT)
 	{
 		if (tmp->type == REDIR_HD)
 		{

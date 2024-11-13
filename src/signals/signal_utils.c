@@ -6,13 +6,13 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:56:03 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/13 13:56:56 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/13 18:59:28 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-static void disable_echoctl(void) 
+void disable_echoctl(void) 
 {
     struct termios term;
 
