@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/12 18:30:19 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/14 13:45:29 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ t_group	*new_group(void)
 
 	group = malloc(sizeof(t_group));
 	if (!group)
-		return (NULL); /////////////////////// ADD ERROR FUNCTION
+		return (NULL);
 	group->next = NULL;
 	return (group);
 }
@@ -36,10 +36,9 @@ void	add_group(t_shell *shell, t_group *new)
 	while (tmp->next)
 		tmp = tmp->next;
 	tmp->next = new;
-	// free(new); // ???
 }
 
-char	*subs_var(t_shell *shell, t_token **tokens)
+char	*subs_var(t_shell *shell, t_token **tokens, char *old)
 {
 	char 	*str;
 	char 	*aux;
@@ -56,7 +55,14 @@ char	*subs_var(t_shell *shell, t_token **tokens)
 	if (tmp->value == '?')
 	{
 		*tokens = tmp->next;
-		return (ft_itoa(shell->prev_status)); ///// LEAK DE MEMORIA
+		str = ft_itoa(shell->prev_status);
+		if (!str)
+		{
+			free(old);
+			free_all(shell);
+			malloc_error();
+		}
+		return (str);
 	}
 	while (tmp && (tmp->type == ENV_VAR || tmp->type == ENV_VAR_Q)
 			&& tmp->value != '$')
@@ -66,6 +72,12 @@ char	*subs_var(t_shell *shell, t_token **tokens)
 	}
 	tmp = *tokens;
 	str = malloc(sizeof(char) * (len + 1));
+	if (!str)
+	{
+		free(old);
+		free_all(shell);
+		malloc_error();
+	}
 	aux = str;
 	while (tmp && (tmp->type == ENV_VAR || tmp->type == ENV_VAR_Q)
 			&& tmp->value != '$')
@@ -80,11 +92,31 @@ char	*subs_var(t_shell *shell, t_token **tokens)
 	while (aux_env)
 	{
 		if (ft_strcmp(aux_env->key, str) == 0)
-			return (ft_strdup(aux_env->value));
+		{
+			free(str);
+			str = ft_strdup(aux_env->value);
+			if (!str)
+			{
+				free(old);
+				free_all(shell);
+				malloc_error();
+			}
+			return (str);
+		}
 		aux_env = aux_env->next;
 	}
+	free(str);
 	if (type == ENV_VAR_Q)
-		return (ft_strdup(""));
+	{
+		str = ft_strdup("");
+		if (!str)
+		{
+			free(old);
+			free_all(shell);
+			malloc_error();
+		}
+		return (str);
+	}
 	return (NULL);
 }
 
@@ -99,7 +131,7 @@ char	*better_strjoin(char const *s1, char const *s2)
 	i = ft_strlen(s1) + ft_strlen(s2);
 	str = (char *)malloc(sizeof(char) * (i + 1));
 	if (!str)
-		return (NULL);  /////////////////////// ADD ERROR FUNCTION
+		return (NULL);
 	i = -1;
 	while (s1[++i])
 		str[i] = s1[i];
@@ -110,7 +142,7 @@ char	*better_strjoin(char const *s1, char const *s2)
 	return (str);
 }
 
-void	add_args_group(t_shell *shell, char *str, int is_var)
+int	add_args_group(t_shell *shell, char *str, int is_var)
 {
 	t_group	*tmp;
 	t_group	*new;
@@ -118,18 +150,19 @@ void	add_args_group(t_shell *shell, char *str, int is_var)
 	tmp = shell->groups;
 	new = new_group();
 	if (!new)
-		return ; /////////////////////// ADD ERROR FUNCTION
+		return (0);
 	new->word = str;
 	new->type = ARG;
 	new->is_var = is_var;
 	if (!shell->groups)
 	{
 		shell->groups = new;
-		return ;
+		return (1);
 	}
 	while (tmp->next)
 		tmp = tmp->next;
 	tmp->next = new;
+	return (1);
 }
 
 char	*space_split(t_shell *shell, char *str, char *new, int *is_var)
@@ -137,6 +170,7 @@ char	*space_split(t_shell *shell, char *str, char *new, int *is_var)
 	int		i;
 	int		j;
 	char	*aux;
+	char	*aux2;
 	
 	i = 0;
 	while (new[i])
@@ -147,12 +181,34 @@ char	*space_split(t_shell *shell, char *str, char *new, int *is_var)
 		if (i > j)
 		{
 			aux = ft_substr(new, j, i - j);
-			str = better_strjoin(str, aux);
+			if (!aux)
+			{
+				free(str);
+				free(new);
+				free_all(shell);
+				malloc_error();
+			}
+			aux2 = better_strjoin(str, aux);
 			free(aux);
+			free(str);
+			str = aux2;
+			if (!str)
+			{
+				free(new);
+				free_all(shell);
+				malloc_error();
+			}
 		}
 		if (new[i] && ft_isspace(new[i]) && str)
 		{
-			add_args_group(shell, str, 1);
+			if (!add_args_group(shell, str, 1))
+			{
+				free(new);
+				free(str);
+				free_all(shell);
+				malloc_error();
+			}
+			free(str);
 			str = NULL;
 			*is_var = 1;
 		}
@@ -169,6 +225,7 @@ t_token	*group_chars(t_shell *shell, t_token *tokens)
 {
 	t_token	*tmp;
 	char	*str;
+	char	*str2;
 	char	aux[2];
 	char	*aux2;
 	int		is_var;
@@ -183,31 +240,63 @@ t_token	*group_chars(t_shell *shell, t_token *tokens)
 		{
 			aux[0]= tmp->value;
 			aux[1] = '\0';
-			str = better_strjoin(str, aux);
+			str2 = better_strjoin(str, aux);
+			if (!str2)
+			{
+				free(str);
+				free_all(shell);
+				malloc_error();
+			}
+			free(str);
+			str = str2;
 			tmp = tmp->next;
 		}
 		if (tmp && tmp->type == ENV_VAR_Q)
 		{
-			aux2 = subs_var(shell, &tmp);
+			aux2 = subs_var(shell, &tmp, str);
 			if (aux2)
-				str = better_strjoin(str, aux2);
+			{
+				str2 = better_strjoin(str, aux2);
+				if (!str2)
+				{
+					free(str);
+					free_all(shell);
+					malloc_error();
+				}
+				free(str);
+				str = str2;
+			}
 		}
 		if (tmp && tmp->type == ENV_VAR)
 		{
-			aux2 = subs_var(shell, &tmp);
+			aux2 = subs_var(shell, &tmp, str);
 			if (aux2)
+			{
 				str = space_split(shell, str, aux2, &is_var);
+			}
 		}
 		if (tmp && tmp->type == EMPTY)
 		{
-			str = better_strjoin(str, "");
+			str2 = better_strjoin(str, "");
+			free(str);
+			if (!str2)
+			{
+				free_all(shell);
+				malloc_error();
+			}
+			str = str2;
 			tmp = tmp->next;
 		}
 	}
 	tokens = tmp;
 	if (!str)
 		return (tokens);
-	add_args_group(shell, str, is_var);
+	if (!add_args_group(shell, str, is_var))
+	{
+		free(str);
+		free_all(shell);
+		malloc_error();
+	}
 	return (tokens);
 }
 
@@ -219,7 +308,10 @@ t_token	*group_pipe(t_shell *shell, t_token *tokens)
 
 	new = new_group();
 	if (!new)
-		return (NULL); /////////////////////// ADD ERROR FUNCTION
+	{
+		free_all(shell);
+		malloc_error();
+	}
 	add_group(shell, new);
 	tmp = tokens;
 	i = 0;
@@ -240,14 +332,21 @@ t_token	*group_pipe(t_shell *shell, t_token *tokens)
 		shell->exit_status = 2;
 		new->type = PIPE;
 		new->word = ft_strdup("|");
-		//return (NULL); /////////////////////// ADD ERROR FUNCTION
+		if (!new->word)
+		{
+			free_all(shell);
+			malloc_error();
+		}
 	}
 	else
 	{
 		new->type = PIPE;
 		new->word = ft_strdup("|");
 		if (!new->word)
-			return (NULL); /////////////////////// ADD ERROR FUNCTION
+		{
+			free_all(shell);
+			malloc_error();
+		}
 	}
 	tokens = tmp;
 	return (tokens);
@@ -264,15 +363,29 @@ t_token	*group_in(t_shell *shell, t_token *tokens)
 	tmp = tokens;
 	new = new_group();
 	if (!new)
-		return (NULL); /////////////////////// ADD ERROR FUNCTION
+	{
+		free_all(shell);
+		malloc_error();
+	}
 	add_group(shell, new);
 	new->type = REDIR_IN;
-	new->word = ft_strdup("<"); // se puede quitar
+	new->word = ft_strdup("<"); // se puede quitar ???
+	if (!new->word)
+	{
+		free_all(shell);
+		malloc_error();
+	}
 	new->first_token = tmp;
 	if (tmp->next && tmp->next->type == CHAR_IN)
 	{
 		new->type = REDIR_HD;
-		new->word = ft_strdup("<<"); // se puede quitar
+		free(new->word);
+		new->word = ft_strdup("<<"); // se puede quitar ???
+		if (!new->word)
+		{
+			free_all(shell);
+			malloc_error();
+		}
 		tmp = tmp->next;
 	}
 	tmp = tmp->next;
@@ -280,14 +393,9 @@ t_token	*group_in(t_shell *shell, t_token *tokens)
 	while (tmp)
 	{
 		if (tmp->type == CHAR || tmp->type == ENV_VAR || tmp->type == ENV_VAR_Q)
-		{
 			ok = 1;
-		}
 		else if (tmp->type != BLANK && ok == 0)
-		{
 			shell->exit_status = 2;
-			//return (NULL); /////////////////////// ADD ERROR FUNCTION
-		}
 		tmp = tmp->next;
 	}
 	tokens = aux;
@@ -305,15 +413,29 @@ t_token	*group_out(t_shell *shell, t_token *tokens)
 	tmp = tokens;
 	new = new_group();
 	if (!new)
-		return (NULL); /////////////////////// ADD ERROR FUNCTION
+	{
+		free_all(shell);
+		malloc_error();
+	}
 	add_group(shell, new);
 	new->type = REDIR_OUT;
 	new->word = ft_strdup(">"); // se puede quitar
+	if (!new->word)
+	{
+		free_all(shell);
+		malloc_error();
+	}
 	new->first_token = tmp;
 	if (tmp->next && tmp->next->type == CHAR_OUT)
 	{
 		new->type = REDIR_APPEND;
+		free(new->word);
 		new->word = ft_strdup(">>"); // se puede quitar
+		if (!new->word)
+		{
+			free_all(shell);
+			malloc_error();
+		}
 		tmp = tmp->next;
 	}
 	tmp = tmp->next;
@@ -321,14 +443,9 @@ t_token	*group_out(t_shell *shell, t_token *tokens)
 	while (tmp)
 	{
 		if (tmp->type == CHAR || tmp->type == ENV_VAR || tmp->type == ENV_VAR_Q)
-		{
 			ok = 1;
-		}
 		else if (tmp->type != BLANK && ok == 0)
-		{
 			shell->exit_status = 2;
-			//return (NULL); /////////////////////// ADD ERROR FUNCTION
-		}
 		tmp = tmp->next;
 	}
 	tokens = aux;
@@ -440,7 +557,6 @@ void	group_tokens(t_shell *shell)
 	t_token	*tokens;
 	
 	tokens = shell->tokens;
-	shell->groups = NULL;
 	while (tokens)
 	{
 		if (tokens->type == BLANK)

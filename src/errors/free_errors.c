@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 13:18:31 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 18:27:02 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:00:16 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,12 @@ void	free_array(char **array)
 		i++;
 	}
 	free(array);
+}
+
+void	malloc_error(void)
+{
+	ft_putstr_fd("Fatal error: malloc: memory allocation error\n", 2);
+	exit(1);
 }
 
 void	free_all(t_shell *shell)
@@ -61,4 +67,5 @@ void	free_all(t_shell *shell)
 		tmp2 = aux2;
 	}
 	free(shell);
+	rl_clear_history();
 }

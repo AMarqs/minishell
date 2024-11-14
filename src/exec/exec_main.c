@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_main.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/13 19:31:18 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:33:36 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -389,16 +389,26 @@ void	exec_everything(t_shell *shell)
 	char	*cmd;
 
 	group = shell->groups;
-	save_restore_fds(0);
+	if (!save_restore_fds(0))
+	{
+		free_all(shell);
+		exit(1);
+	}
+	read_heredocs(shell); ////// AQUI
 	cmd = find_cmd(group);
 	if (!cmd)
 	{
 		if (group)
+		{
 			handle_redirections(shell, group);
-		save_restore_fds(1);
+		}
+		if (!save_restore_fds(1))
+		{
+			free_all(shell);
+			exit(1);
+		}
 		return ;
 	}
-	read_heredocs(shell);
 	if (g_signal != SIGINT)
 	{
 		init_signal_quit();
@@ -459,5 +469,9 @@ void	exec_everything(t_shell *shell)
 		free(pids);
 	}
 	init_signal();
-	save_restore_fds(1);
+	if (!save_restore_fds(1))
+	{
+		free_all(shell);
+		exit(1);
+	}	
 }

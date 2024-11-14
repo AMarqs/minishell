@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 20:09:30 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/11 12:49:44 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/14 13:52:59 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,20 @@ t_env	*envp_dup(t_env *envp)
 	t_env	*tmp2;
 
 	tmp = NULL;
+	tmp2 = NULL;
 	while (envp)
 	{
 		new = malloc(sizeof(t_env));
 		if (!new)
-			return (NULL); /////////////////////// ADD ERROR FUNCTION
+		{
+			while (tmp2)
+			{
+				tmp = tmp2;
+				tmp2 = tmp2->next;
+				free(tmp);
+			}
+			return (NULL);
+		}
 		new->key = envp->key;
 		new->value = envp->value;
 		new->next = NULL;
@@ -66,7 +75,7 @@ t_env	*envp_dup(t_env *envp)
 	return (tmp2);
 }
 
-void	order_env(t_shell *shell)
+int	order_env(t_shell *shell)
 {
 	t_env	*tmp;
 	t_env	*sorted;
@@ -75,6 +84,8 @@ void	order_env(t_shell *shell)
 
 	len = 0;
 	sorted = envp_dup(shell->envp);
+	if (!sorted)
+		return (0);
 	first = sorted;
 	while (sorted)
 	{
@@ -120,6 +131,7 @@ void	order_env(t_shell *shell)
 		sorted = sorted->next;
 		free(tmp);
 	}
+	return (1);
 }
 
 void	ft_split_var(t_env *new, char *value)
@@ -182,7 +194,7 @@ int	check_export(char *args)
 	return (1);
 }
 
-void	export(t_shell *shell, char **args)
+int	export(t_shell *shell, char **args)
 {
 	t_env	*new;
 	int		i;
@@ -191,8 +203,10 @@ void	export(t_shell *shell, char **args)
 	shell->exit_status = 0;
 	if (!args || args[0] == NULL)
 	{
-		order_env(shell);
-		return ;
+		if (shell->envp)
+			if (!order_env(shell))
+				return (0);
+		return (1);
 	}
 	while (args[i])
 	{
@@ -200,7 +214,7 @@ void	export(t_shell *shell, char **args)
 		{
 			new = malloc(sizeof(t_env));
 			if (!new)
-				return ; /////////////////////// ADD ERROR FUNCTION
+					return (0);
 			ft_split_var(new, args[i]); 
 			new->next = NULL;
 			add_envp(shell, new);
@@ -214,4 +228,5 @@ void	export(t_shell *shell, char **args)
 		}
 		i++;
 	}
+	return (1);
 }

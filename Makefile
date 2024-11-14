@@ -8,7 +8,7 @@ SRCS = 	main.c \
 		parse.c \
 		group.c \
 		utils.c \
-		free_errors.c \
+		errors/free_errors.c \
 		built-ins/export.c \
 		built-ins/unset.c \
 		built-ins/env.c \
@@ -25,7 +25,8 @@ SRCS = 	main.c \
 		signals/signal_utils.c
 
 SRC = $(addprefix src/, $(SRCS))
-OBJ = $(SRC:.c=.o)
+OBJ_DIR = obj
+OBJ = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 FLAGS = -Wall -Wextra -Werror -Ofast -g
 CC = clang
@@ -35,14 +36,15 @@ all: $(NAME)
 $(NAME): $(OBJ) libft
 	@$(CC) $(FLAGS) -lreadline -gdwarf-4 $(OBJ) $(LIBRARIES) $(HEADERS) -o $(NAME)
 	
-%.o: %.c
+$(OBJ_DIR)/%.o: src/%.c
+	@mkdir -p $(dir $@)
 	$(CC) $(FLAGS) -gdwarf-4 -o $@ -c $< $(HEADERS) && printf "Compiling: $(notdir $< \n)"
 
 libft:
 	@make -C $(LIBFT)
 
 clean:
-	@rm -rf $(OBJ)
+	@rm -rf $(OBJ_DIR)
 	@make fclean -C $(LIBFT)
 
 fclean: clean

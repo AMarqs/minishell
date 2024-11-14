@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/13 13:56:49 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/14 13:52:12 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,8 +115,9 @@ void		parse_line(t_shell *shell);
 void		group_tokens(t_shell *shell);
 void		exec_everything(t_shell *shell);
 void		free_all(t_shell *shell);
+void		malloc_error(void);
 void		free_array(char **array);
-void		save_restore_fds(int i);
+int			save_restore_fds(int i);
 void		print_groups(t_group *group); ///////// BORRAR FUNCION
 void		print_array(char **array); ///////// BORRAR FUNCION
 
@@ -139,11 +140,11 @@ void		exit_shell(t_shell *shell, int x, char **args);
 void		ft_swap(char **a, char **b);               // a archivo utils???
 int			ft_strcmp(const char *s1, const char *s2);	// a archivo utils???
 t_env		*envp_dup(t_env *envp);					// a archivo manage_env???
-void		order_env(t_shell *shell);				// a archivo manage_env???
+int			order_env(t_shell *shell);				// a archivo manage_env???
 void		ft_split_var(t_env *new, char *value);		// a archivo manage_env???
 void		add_envp(t_shell *shell, t_env *new);		// a archivo manage_env???
 int			check_export(char *args);
-void		export(t_shell *shell, char **args);
+int			export(t_shell *shell, char **args);
 
 // pwd.c
 void		pwd(t_shell *shell);
@@ -154,7 +155,7 @@ void		unset(t_shell *shell, char **args);
 // EXECUTION
 
 // environment.c
-t_env		*environ(char **envp);
+t_env		*environ(t_shell *shell, char **envp);
 t_env		*env_values(char *env);
 
 // redirections.c

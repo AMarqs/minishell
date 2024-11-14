@@ -3,6 +3,7 @@
 
 # Object files
 objects/
+obj/
 *.o
 *.ko
 *.obj
@@ -61,14 +62,4 @@ minishell
 libft/sources/main.c
 
 minishell_test.log
-test
-out
-path/a/b
-fi
-@
-a
-aa
-afi le
-somecmd
-somefile
-file
+tofree

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:56:01 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/13 19:21:30 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:20:53 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,9 +98,21 @@ void	create_heredoc(t_shell *shell, char *word, int hd_num)
 	int		fd;
 	char	*line;
 	char	*doc;
+	char	*num;
 	
 	doc = "/tmp/heredoc";
-	doc = ft_strjoin(doc, ft_itoa(hd_num));
+	num = ft_itoa(hd_num);
+	if (!num)
+	{
+		shell->exit_status = 1;
+		return ;
+	}
+	doc = ft_strjoin(doc, num);
+	if (!doc)
+	{
+		shell->exit_status = 1;
+		return ;
+	}
 	fd = open(doc, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	free(doc);
 	if (fd < 0)

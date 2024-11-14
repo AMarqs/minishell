@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:05 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/12 18:36:55 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/14 12:26:08 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ t_token	*new_token(enum e_token type, char value)
 
 	token = malloc(sizeof(t_token));
 	if (!token)
-		return (NULL); /////////////////////// ADD ERROR FUNCTION
+		return (NULL);
 	token->type = type;
 	token->value = value;
 	token->next = NULL;
@@ -33,7 +33,6 @@ void add_token(t_shell *shell, t_token *new)
 	if (!shell->tokens)
 	{
 		shell->tokens = new;
-		// free(new); // ?????
 		return ;
 	}
 	while (tmp->next)
@@ -46,6 +45,11 @@ t_token	*create_token(t_shell *shell, enum e_token type, char value)
 	t_token	*new;
 
 	new = new_token(type, value);
+	if (!new)
+	{
+		free_all(shell);
+		malloc_error();
+	}
 	add_token(shell, new);
 	return (new);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/13 19:07:21 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:05:09 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,33 +67,56 @@ t_env	*env_values(char *env)
 
 	new = malloc(sizeof(t_env));
 	if (!new)
-		return (NULL); /////////////////////// ADD ERROR FUNCTION
+		return (NULL);
 	tmp = ft_split_env(env, '=');
 	if (!tmp)
-		return (NULL); /////////////////////// ADD ERROR FUNCTION
+	{
+		free(new);
+		return (NULL);
+	}
 	new->key = tmp[0];
 	new->value = ft_strdup(getenv(new->key));
+	if (!new->value)
+	{
+		if (tmp[1])
+			free(tmp[1]);
+		free(tmp[0]);
+		free(tmp);
+		free(new);
+		return (NULL);
+	}
 	new->next = NULL;
+	if (tmp[1])
+		free(tmp[1]);
 	free (tmp);
 	return (new);
 }
 
-t_env	*environ(char **envp)
+t_env	*environ(t_shell *shell, char **envp)
 {
 	t_env	*new;
 	t_env	*tmp;
 	int		i;
 	
 	i = 1;
-	if (!envp)
-		return (NULL);
-	if (!envp[0])
+	if (!envp || envp[0] == NULL)
 		return (NULL);
 	new = env_values(envp[0]);
+	if (!new)
+	{
+		free(shell);
+		return (NULL);		
+	}
 	tmp = new;
 	while(envp[i])
 	{
 		new->next = env_values(envp[i]);
+		if (!new->next)
+		{
+			free_all(shell);  /// Liberar new, new->key, new->value (para todo lo anterior), y shell
+			/// Mensaje de error y exit
+			return (NULL);
+		}
 		new = new->next;
 		i++;
 	}
@@ -126,8 +149,9 @@ int	main(int argc, char **argv, char **envp)
 	}
 	//shell->path = get_path(shell);
 	//shell->path = NULL;
-	shell->envp = environ(envp);
+	shell->envp = environ(shell, envp);
 	shell->tokens = NULL;
+	shell->groups = NULL;
 	shell->exit_status = 0;
 	init_signal();
 	disable_echoctl();
@@ -136,29 +160,56 @@ int	main(int argc, char **argv, char **envp)
 	char *oldpwd[2];
 	if (!search_env(shell, "PWD"))
 	{
-		pwd[0] = ft_strjoin("PWD=", getcwd(NULL, 0));
+		char *cwd;
+		cwd = getcwd(NULL, 0);
+		pwd[0] = ft_strjoin("PWD=", cwd);
+		if (!pwd[0])
+		{
+			free(cwd);
+			free_all(shell); // envp y shell
+			malloc_error();
+		}
 		pwd[1] = NULL;
-		export(shell, pwd);
+		free(cwd);
+		if (!export(shell, pwd))
+		{
+			free(pwd[0]);
+			free_all(shell); // envp y shell
+			malloc_error();
+		}
+		free(pwd[0]);
 	}
 	if (!search_env(shell, "OLDPWD"))
 	{
 		oldpwd[0] = "OLDPWD";
 		oldpwd[1] = NULL;
-		export(shell, oldpwd);
+		if (!export(shell, oldpwd))
+		{
+			free_all(shell); // envp y shell
+			malloc_error();
+		}
 	}
 	if (!search_env(shell, "PATH"))
 	{
 		char *path[2];
 		path[0] = "PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin";
 		path[1] = NULL;
-		export(shell, path);
+		if (!export(shell, path))
+		{
+			free_all(shell); // envp y shell
+			malloc_error();
+		}
 	}
 	char *shlvl[2];
 	if (!search_env(shell, "SHLVL"))
 	{
 		shlvl[0] = "SHLVL=1";
 		shlvl[1] = NULL;
-		export(shell, shlvl);
+		if (!export(shell, shlvl))
+		{
+			free_all(shell); // envp y shell
+			malloc_error();
+		}
 	}
 	else
 	{
@@ -174,12 +225,29 @@ int	main(int argc, char **argv, char **envp)
 			ft_putstr_fd("minishell: warning: shell level (", 2);
 			ft_putstr_fd(aux, 2);
 			ft_putstr_fd(") too high, resetting to 1\n", 2);
+			free (aux);
 		}
 		aux = ft_itoa(i);
+		if (!aux)
+		{
+			free_all(shell); // envp y shell
+			malloc_error();
+		}
 		shlvl[0] = ft_strjoin("SHLVL=", aux);
+		if (!shlvl[0])
+		{
+			free(aux);
+			free_all(shell); // envp y shell
+			malloc_error();
+		}
 		shlvl[1] = NULL;
 		free(aux);
-		export(shell, shlvl);
+		if (!export(shell, shlvl))
+		{
+			free(shlvl[0]);
+			free_all(shell); // envp y shell
+			malloc_error();
+		}
 	}
 	// if (!search_env(shell, "_"))
 	// {
@@ -199,10 +267,15 @@ int	main(int argc, char **argv, char **envp)
 	// 	}
 	// }
 
-	if (argc != 1 && ft_strcmp(argv[1], "-c") == 0)
+	if (argc >=2 && ft_strcmp(argv[1], "-c") == 0)
 	{
 		shell->path = NULL;
 		char *line2 = ft_substr(argv[2], 0, ft_strlen(argv[2]) - 1);
+		if (!line2)
+		{
+			free_all(shell);
+			malloc_error();
+		}
 		shell->line = line2;
 		if (!line2)
 			return (shell->exit_status);
@@ -224,10 +297,9 @@ int	main(int argc, char **argv, char **envp)
 		{
 			shell->path = NULL;
 			line = readline("minishell$ ");
-			//disable_echoctl();
-			shell->line = line;
 			if (!line)
 				break ;
+			shell->line = line;
 			if (line[0] != '\0')
 			{
 				shell->exit_status = 0;
@@ -242,13 +314,15 @@ int	main(int argc, char **argv, char **envp)
 				//free_all(shell);
 			}
 			free(line);
+			shell->line = NULL;
+			///////////// LIBERAR GROUPS
+			shell->groups = NULL;
 		}
 	}
-	rl_clear_history();
-	return (shell->exit_status);
-	// int i = shell->exit_status;
-	// free_all(shell);
-	// return (i);
+	// rl_clear_history();
+	int i = shell->exit_status;
+	free_all(shell);
+	return (i);
 }
 
 // /home/ubuntu/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin
