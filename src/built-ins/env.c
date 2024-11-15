@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 12:58:51 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 18:26:19 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 14:17:07 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,5 +23,5 @@ void	env(t_shell *shell)
 			printf("%s=%s\n", tmp->key, tmp->value);
 		tmp = tmp->next;
 	}
-	shell->exit_status = 0;
+	shell->exit_status = 0; ///// SE PUEDE QUITAR
 }

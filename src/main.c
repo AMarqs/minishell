@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/14 14:05:09 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 14:31:26 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,14 +234,13 @@ int	main(int argc, char **argv, char **envp)
 			malloc_error();
 		}
 		shlvl[0] = ft_strjoin("SHLVL=", aux);
+		free(aux);
 		if (!shlvl[0])
 		{
-			free(aux);
 			free_all(shell); // envp y shell
 			malloc_error();
 		}
 		shlvl[1] = NULL;
-		free(aux);
 		if (!export(shell, shlvl))
 		{
 			free(shlvl[0]);

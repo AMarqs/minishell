@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 13:18:31 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/14 14:00:16 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 13:11:48 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,25 @@ void	malloc_error(void)
 	exit(1);
 }
 
+void	free_heredocs(t_shell *shell)
+{
+	t_group	*tmp;
+
+	tmp = shell->groups;
+	while (tmp)
+	{
+		if (tmp->type == REDIR_HD)
+		{
+			if (tmp->file)
+			{
+				unlink(tmp->file);
+				free(tmp->file);
+			}
+		}
+		tmp = tmp->next;
+	}
+}
+
 void	free_all(t_shell *shell)
 {
 	t_env	*tmp;
@@ -40,6 +59,7 @@ void	free_all(t_shell *shell)
 	t_group	*tmp2;
 	t_group	*aux2;
 
+	free_heredocs(shell);
 	tmp = shell->envp;
 	while (tmp)
 	{

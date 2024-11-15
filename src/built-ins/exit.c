@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:09:44 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/11 12:25:06 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 14:28:10 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,21 +52,17 @@ void	exit_shell(t_shell *shell, int child, char **args)
 {
 	int	i;
 
-	//ft_putstr_fd("exit\n", 1);
+	ft_putstr_fd("exit\n", 1);
 	if (args)
 	{
 		i = exit_args(args);
 		if (i)
-		{
 			shell->exit_status = i;
-			return ;
-		}
 		else if (args[0])
 			shell->exit_status = (unsigned char)ft_atoi(args[0]);
 	}
-	if (child)
-	{
+	free(args);
+	if (!child)
 		free_all(shell);
-	}
 	exit(shell->exit_status);
 }

@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/14 13:52:12 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 13:56:25 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ typedef struct s_group
 	enum e_words	type;
 	char			*word;
 	int				is_var;
+	char			*file;
 	struct s_token	*first_token;
 	struct s_group	*next;
 }					t_group;
@@ -120,6 +121,7 @@ void		free_array(char **array);
 int			save_restore_fds(int i);
 void		print_groups(t_group *group); ///////// BORRAR FUNCION
 void		print_array(char **array); ///////// BORRAR FUNCION
+char		*search_env(t_shell *shell, char *key);
 
 // BULT-INS
 
@@ -162,7 +164,7 @@ t_env		*env_values(char *env);
 void		input_redirection(t_shell *shell, char *file);
 void		output_redirection(t_shell *shell, char *file);
 void		append_redirection(t_shell *shell, char *file);
-void		heredoc_redirection(t_shell *shell, int i);
+void		heredoc_redirection(t_shell *shell, char *doc);
 void		handle_redirections(t_shell *shell, t_group *group);
 
 // get_stuff.c
@@ -173,7 +175,7 @@ char		*get_path(t_shell *shell, char **env, char *cmd);
 // heredoc.c
 int			count_hd(t_group *groups);
 void		subs_hd(t_shell *shell, char *line, int fd);
-void		create_heredoc(t_shell *shell, char *word, int hd_num);
+void		create_heredoc(t_shell *shell, t_group *group, int hd_num);
 void		read_heredocs(t_shell *shell);
 
 // SRC

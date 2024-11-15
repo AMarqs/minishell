@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:27:05 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 18:26:12 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 14:15:48 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	cd(t_shell *shell, char **args)
 	{
 		shell->exit_status = 1;
 		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
-		return ; /////////////////////// ADD ERROR FUNCTION
+		return ;
 	}
 	oldpwd = getcwd(NULL, 0);
 	if (chdir(args[0]) == -1)
@@ -32,12 +32,13 @@ void	cd(t_shell *shell, char **args)
 		ft_putstr_fd(": No such file or directory\n", 2);
 		shell->exit_status = 1;
 		free(oldpwd);
-		return ; /////////////////////// ADD ERROR FUNCTION
+		return ;
 	}
-	shell->exit_status = 0;
+	shell->exit_status = 0;  //////// SE PUEDE QUITAR
 	if (!shell->envp)
 	{
-		return ; /////////////////////// ADD ERROR FUNCTION
+		free(oldpwd);
+		return ;
 	}
 	tmp = shell->envp;
 	while (tmp->next)

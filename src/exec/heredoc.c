@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:56:01 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/14 14:20:53 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 13:41:35 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void	subs_hd(t_shell *shell, char *line, int fd)
 	int		j;
 	int 	len;
 	char	*var;
+	char	*exit_status;
 	
 	i = 0;
 	var = NULL;
@@ -42,46 +43,62 @@ void	subs_hd(t_shell *shell, char *line, int fd)
 	{
 		if (line[i] == '$')
 		{
-			i++;
-			if (ft_isspace(line[i]) || line[i] == '\0')
+			if (!line[i + 1] || !(line[i + 1] == '_'
+				|| ft_isalpha(line[i + 1]) || line[i + 1] == '?'))
 			{
 				ft_putchar_fd('$', fd);
-				ft_putchar_fd(line[i], fd);
-				i++;
+				if (line[i + 1] == '\0')
+					break ;
 			}
 			else
 			{
-				if (line[i] == '?')
+				if (line[++i] == '?')
 				{
-					ft_putstr_fd(ft_itoa(shell->prev_status), fd); ///// LEAK DE MEMORIA
-					i++;
+					exit_status = ft_itoa(shell->prev_status);
+					if (!exit_status)
+					{
+						close(fd);
+						free_all(shell);
+						malloc_error();
+					}
+					ft_putstr_fd(exit_status, fd);
 				}
-				j = i;
-				len = 0;
-				if (line[i] && (ft_isalpha(line[i]) || line[i + 1] == '_'))
+				else
 				{
-					while (line[i] && (ft_isalnum(line[i]) || line[i] == '_'))
+					j = i;
+					len = 0;
+					if (line[i] && (ft_isalpha(line[i]) || line[i + 1] == '_'))
 					{
-						len++;
-						i++;
-					}
-					var = malloc(sizeof(char) * (len + 1));
-					i = j;
-					j = 0;
-					while (j < len)
-					{
-						var[j] = line[i];
-						i++;
-						j++;
-					}
-					var[j] = '\0';
-					tmp = getenv(var);
-					if (tmp)
-					{
-						ft_putstr_fd(tmp, fd);
+						while (line[i] && (ft_isalnum(line[i]) || line[i] == '_'))
+						{
+							len++;
+							i++;
+						}
+						var = malloc(sizeof(char) * (len + 1));
+						if (!var)
+						{
+							close(fd);
+							free_all(shell);
+							malloc_error();
+						}
+						i = j;
+						j = 0;
+						while (j < len)
+						{
+							var[j] = line[i];
+							i++;
+							j++;
+						}
+						i--;
+						var[j] = '\0';
+						tmp = search_env(shell, var);
+						free(var);
+						if (tmp)
+						{
+							ft_putstr_fd(tmp, fd);
+						}
 					}
 				}
-				free(var);
 			}
 		}
 		else
@@ -93,7 +110,7 @@ void	subs_hd(t_shell *shell, char *line, int fd)
 	ft_putchar_fd('\n', fd);
 }
 
-void	create_heredoc(t_shell *shell, char *word, int hd_num)
+void	create_heredoc(t_shell *shell, t_group *group, int hd_num)
 {
 	int		fd;
 	char	*line;
@@ -104,17 +121,17 @@ void	create_heredoc(t_shell *shell, char *word, int hd_num)
 	num = ft_itoa(hd_num);
 	if (!num)
 	{
-		shell->exit_status = 1;
-		return ;
+		free_all(shell);
+		malloc_error();
 	}
 	doc = ft_strjoin(doc, num);
 	if (!doc)
 	{
-		shell->exit_status = 1;
-		return ;
+		free_all(shell);
+		malloc_error();
 	}
+	group->file = doc;
 	fd = open(doc, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	free(doc);
 	if (fd < 0)
 	{
 		ft_putstr_fd("minishell: ", 2);
@@ -127,7 +144,7 @@ void	create_heredoc(t_shell *shell, char *word, int hd_num)
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || (ft_strcmp(line, word) == 0) || g_signal == SIGINT)
+		if (!line || (ft_strcmp(line, group->next->word) == 0) || g_signal == SIGINT)
 		{
 			free(line);
 			break ;
@@ -140,7 +157,7 @@ void	create_heredoc(t_shell *shell, char *word, int hd_num)
 	{
 		ft_putstr_fd("minishell: warning: here-document ", STDERR_FILENO);
 		ft_putstr_fd("delimited by end-of-file (wanted `", STDERR_FILENO);
-		ft_putstr_fd(word, STDERR_FILENO);
+		ft_putstr_fd(group->next->word, STDERR_FILENO);
 		ft_putendl_fd("')", STDERR_FILENO);
 	}
 }
@@ -157,7 +174,7 @@ void	read_heredocs(t_shell *shell)
 	{
 		if (tmp->type == REDIR_HD)
 		{
-			create_heredoc(shell, tmp->next->word, hd_num);
+			create_heredoc(shell, tmp, hd_num);
 			hd_num++;
 		}
 		tmp = tmp->next;

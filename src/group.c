@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/14 13:45:29 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 12:47:25 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,9 @@ t_group	*new_group(void)
 	if (!group)
 		return (NULL);
 	group->next = NULL;
+	group->word = NULL;
+	group->is_var = 0;
+	group->file = NULL;
 	return (group);
 }
 

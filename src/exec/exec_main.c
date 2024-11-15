@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/14 14:33:36 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 15:25:17 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ char	**get_args(t_group *groups)
 	}
 	args = malloc(sizeof(char *) * (i + 1));
 	if (!args)
-		return (NULL); /////////////////////// ADD ERROR FUNCTION
+		return (NULL);
 	i = 0;
 	tmp = groups;
 	while (tmp && tmp->type != PIPE)
@@ -105,7 +105,15 @@ void	exec_builtin(t_shell *shell, t_group *group, int i, int child)
 	if (i == 4)
 		exit_shell(shell, child, args);
 	if (i == 5)
-		export(shell, args);
+	{
+		if (!export(shell, args))
+		{
+			if (!child)
+				free_all(shell);
+			free(args);
+			malloc_error();
+		}
+	}
 	if (i == 6)
 		pwd(shell);
 	if (i == 7)
@@ -237,11 +245,18 @@ void	exec_cmd(t_shell *shell, t_group *group)
 	i = is_builtin(cmd);
 	if (i)
 	{
-		exec_builtin(shell, group, i, 0);
+		exec_builtin(shell, group, i, count_pipes(shell->groups));
 		return ;
 	}
 	args = get_args(group);
+	if (!args)
+		malloc_error();
 	env = get_envp(shell->envp);
+	if (!env)
+	{
+		free(args);
+		malloc_error();
+	}
 	if ((cmd[0] == '.' && cmd[1] == '/') || cmd[0] == '/'
 		|| cmd[ft_strlen(cmd) - 1] == '/' || ft_strnstr(cmd, "/", ft_strlen(cmd)))
 	{
@@ -342,6 +357,7 @@ void	exec_cmd(t_shell *shell, t_group *group)
 	}
 	execve(cmd, args, env);
 	free(args);
+	free(env);
 }
 
 void	exec_block(t_shell *shell, t_group *group)
@@ -354,15 +370,24 @@ void	exec_block(t_shell *shell, t_group *group)
 
 void	redirect_pipes(int prev_fd, int next_fd)
 {
-	// printf("prev_fd: %d, next_fd: %d\n", prev_fd, next_fd);
 	if (prev_fd >= 0)
 	{
-		dup2(prev_fd, STDIN_FILENO);
+		if (dup2(prev_fd, STDIN_FILENO) == -1)
+		{
+			close(prev_fd);
+			perror("Fatal error: dup2");
+			exit(1);
+		}
 		close(prev_fd);
 	}
 	if (next_fd >= 0)
 	{
-		dup2(next_fd, STDOUT_FILENO);
+		if (dup2(next_fd, STDOUT_FILENO) == -1)
+		{
+			close(next_fd);
+			perror("Fatal error: dup2");
+			exit(1);
+		}
 		close(next_fd);
 	}
 }
@@ -387,6 +412,7 @@ void	exec_everything(t_shell *shell)
 	t_group *group;
 	int		*pids;
 	char	*cmd;
+	int		fork_n;
 
 	group = shell->groups;
 	if (!save_restore_fds(0))
@@ -394,7 +420,7 @@ void	exec_everything(t_shell *shell)
 		free_all(shell);
 		exit(1);
 	}
-	read_heredocs(shell); ////// AQUI
+	read_heredocs(shell);
 	cmd = find_cmd(group);
 	if (!cmd)
 	{
@@ -415,7 +441,13 @@ void	exec_everything(t_shell *shell)
 		prev_fd = -1;
 		pipe_n = count_pipes(shell->groups);
 		pids = malloc(sizeof(int) * (pipe_n + 1));
+		if (!pids)
+		{
+			free_all(shell);
+			malloc_error();
+		}
 		i = 0;
+		fork_n = 0;
 		if (pipe_n == 0 && is_builtin(cmd))
 		{
 			exec_block(shell, group);
@@ -426,7 +458,12 @@ void	exec_everything(t_shell *shell)
 			{
 				if (i < pipe_n)
 				{
-					pipe(pipe_fd);
+					if (pipe(pipe_fd) == -1)
+					{
+						perror("pipe");
+						shell->exit_status = 1;
+						break ;
+					}
 				}
 				else
 				{
@@ -434,6 +471,14 @@ void	exec_everything(t_shell *shell)
 					pipe_fd[1] = -1;
 				}
 				pids[i] = fork();
+				if (pids[i] == -1)
+				{
+					perror("fork");
+					shell->exit_status = 1;
+					break ;
+				}
+				if (pids[i] > 0)
+					fork_n++;
 				if (pids[i] == 0)
 				{
 					signal(SIGINT, SIG_DFL);
@@ -458,7 +503,7 @@ void	exec_everything(t_shell *shell)
 				i++;
 			}
 			i = 0;
-			while (i <= pipe_n)
+			while (i < fork_n)
 			{
 				waitpid(pids[i], &shell->exit_status, 0);
 				if (WIFEXITED(shell->exit_status))
@@ -467,11 +512,16 @@ void	exec_everything(t_shell *shell)
 			}
 		}
 		free(pids);
+		if (fork_n < pipe_n + 1 && !is_builtin(cmd))
+		{
+			free_all(shell);
+			exit(1);
+		}
 	}
 	init_signal();
 	if (!save_restore_fds(1))
 	{
 		free_all(shell);
 		exit(1);
-	}	
+	}
 }
