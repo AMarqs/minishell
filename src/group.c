@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/15 12:47:25 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 18:35:36 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,7 +215,8 @@ char	*space_split(t_shell *shell, char *str, char *new, int *is_var)
 			str = NULL;
 			*is_var = 1;
 		}
-		i++;
+		if (new[i])
+			i++;
 	}
 	if (!str)
 		*is_var = 0;
@@ -260,6 +261,7 @@ t_token	*group_chars(t_shell *shell, t_token *tokens)
 			if (aux2)
 			{
 				str2 = better_strjoin(str, aux2);
+				free(aux2);
 				if (!str2)
 				{
 					free(str);
@@ -277,6 +279,7 @@ t_token	*group_chars(t_shell *shell, t_token *tokens)
 			{
 				str = space_split(shell, str, aux2, &is_var);
 			}
+			free(aux2);
 		}
 		if (tmp && tmp->type == EMPTY)
 		{

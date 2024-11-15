@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/15 14:31:26 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 18:26:07 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,7 @@ int	main(int argc, char **argv, char **envp)
 	shell->envp = environ(shell, envp);
 	shell->tokens = NULL;
 	shell->groups = NULL;
+	shell->line = NULL;
 	shell->exit_status = 0;
 	init_signal();
 	disable_echoctl();
@@ -225,8 +226,8 @@ int	main(int argc, char **argv, char **envp)
 			ft_putstr_fd("minishell: warning: shell level (", 2);
 			ft_putstr_fd(aux, 2);
 			ft_putstr_fd(") too high, resetting to 1\n", 2);
-			free (aux);
 		}
+		free(aux);
 		aux = ft_itoa(i);
 		if (!aux)
 		{
@@ -247,6 +248,7 @@ int	main(int argc, char **argv, char **envp)
 			free_all(shell); // envp y shell
 			malloc_error();
 		}
+		free(shlvl[0]);
 	}
 	// if (!search_env(shell, "_"))
 	// {
@@ -314,8 +316,8 @@ int	main(int argc, char **argv, char **envp)
 			}
 			free(line);
 			shell->line = NULL;
-			///////////// LIBERAR GROUPS
-			shell->groups = NULL;
+			shell->groups = free_groups(shell->groups);
+			shell->tokens = free_tokens(shell->tokens);
 		}
 	}
 	// rl_clear_history();

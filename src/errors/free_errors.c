@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 13:18:31 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/15 13:11:48 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 18:24:43 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,14 +50,37 @@ void	free_heredocs(t_shell *shell)
 	}
 }
 
+void	*free_groups(t_group *group)
+{
+	t_group	*tmp;
+
+	while (group)
+	{
+		tmp = group->next;
+		free(group->word);
+		free(group);
+		group = tmp;
+	}
+	return (NULL);
+}
+
+void	*free_tokens(t_token *token)
+{
+	t_token	*tmp;
+
+	while (token)
+	{
+		tmp = token->next;
+		free(token);
+		token = tmp;
+	}
+	return (NULL);
+}
+
 void	free_all(t_shell *shell)
 {
 	t_env	*tmp;
 	t_env	*aux;
-	t_token	*tmp1;
-	t_token	*aux1;
-	t_group	*tmp2;
-	t_group	*aux2;
 
 	free_heredocs(shell);
 	tmp = shell->envp;
@@ -71,21 +94,8 @@ void	free_all(t_shell *shell)
 	}
 	free(shell->line);
 	free(shell->path);
-	tmp1 = shell->tokens;
-	while (tmp1)
-	{
-		aux1 = tmp1->next;
-		free(tmp1);
-		tmp1 = aux1;
-	}
-	tmp2 = shell->groups;
-	while (tmp2)
-	{
-		aux2 = tmp2->next;
-		free(tmp2->word);
-		free(tmp2);
-		tmp2 = aux2;
-	}
+	free_tokens(shell->tokens);
+	free_groups(shell->groups);
 	free(shell);
 	rl_clear_history();
 }

@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/15 15:25:17 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 18:22:59 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -440,12 +440,6 @@ void	exec_everything(t_shell *shell)
 		init_signal_quit();
 		prev_fd = -1;
 		pipe_n = count_pipes(shell->groups);
-		pids = malloc(sizeof(int) * (pipe_n + 1));
-		if (!pids)
-		{
-			free_all(shell);
-			malloc_error();
-		}
 		i = 0;
 		fork_n = 0;
 		if (pipe_n == 0 && is_builtin(cmd))
@@ -454,6 +448,12 @@ void	exec_everything(t_shell *shell)
 		}
 		else
 		{
+			pids = malloc(sizeof(int) * (pipe_n + 1));
+			if (!pids)
+			{
+				free_all(shell);
+				malloc_error();
+			}
 			while (i <= pipe_n)
 			{
 				if (i < pipe_n)
@@ -510,8 +510,8 @@ void	exec_everything(t_shell *shell)
 					shell->exit_status = WEXITSTATUS(shell->exit_status);
 				i++;
 			}
+			free(pids);
 		}
-		free(pids);
 		if (fork_n < pipe_n + 1 && !is_builtin(cmd))
 		{
 			free_all(shell);

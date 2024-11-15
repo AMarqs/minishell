@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/15 13:56:25 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 18:24:52 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,8 @@ void		exec_everything(t_shell *shell);
 void		free_all(t_shell *shell);
 void		malloc_error(void);
 void		free_array(char **array);
+void		*free_groups(t_group *group);
+void		*free_tokens(t_token *token);
 int			save_restore_fds(int i);
 void		print_groups(t_group *group); ///////// BORRAR FUNCION
 void		print_array(char **array); ///////// BORRAR FUNCION

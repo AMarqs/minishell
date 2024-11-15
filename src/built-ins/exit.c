@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:09:44 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/15 14:28:10 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/15 18:10:11 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,11 @@ void	exit_shell(t_shell *shell, int child, char **args)
 			shell->exit_status = (unsigned char)ft_atoi(args[0]);
 	}
 	free(args);
+	i = shell->exit_status;
 	if (!child)
+	{
+		save_restore_fds(1);
 		free_all(shell);
-	exit(shell->exit_status);
+	}
+	exit(i);
 }
