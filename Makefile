@@ -8,18 +8,21 @@ SRCS = 	main.c \
 		parse.c \
 		group.c \
 		utils.c \
-		errors/free_errors.c \
-		built-ins/export.c \
-		built-ins/unset.c \
-		built-ins/env.c \
-		built-ins/pwd.c \
 		built-ins/cd.c \
 		built-ins/echo.c \
+		built-ins/env.c \
 		built-ins/exit.c \
+		built-ins/export.c \
+		built-ins/export_utils.c \
+		built-ins/export_env.c \
+		built-ins/pwd.c \
+		built-ins/unset.c \
 		exec/exec_main.c \
 		exec/fd_handler.c \
 		exec/redirections.c \
 		exec/heredoc.c \
+		errors/frees.c \
+		errors/errors.c \
 		signals/signal_init.c \
 		signals/signal_handler.c \
 		signals/signal_utils.c

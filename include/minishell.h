@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/18 12:51:30 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/18 20:23:00 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,9 @@ char		*search_env(t_shell *shell, char *key);
 // BULT-INS
 
 // cd.c
+void		args_cd_error(t_shell *shell);
+void		file_cd_error(t_shell *shell, char *file, char *oldpwd);
+void		update_pwd(t_shell *shell, char *oldpwd);
 void		cd(t_shell *shell, char **args);
 
 // echo.c
@@ -138,15 +141,24 @@ void		ft_echo(t_shell *shell, char **args);
 void		env(t_shell *shell);
 
 // exit.c
+void		num_exit_error(t_shell *shell, char *arg);
+void		args_exit_error(t_shell *shell);
 void		exit_shell(t_shell *shell, char **args);
 
+// export_utils.c
+void		export_error(t_shell *shell, char *arg);
+void		ft_swap(char **a, char **b);
+int			ft_strcmp(const char *s1, const char *s2);
+void		ft_split_var(t_env *new, char *value);
+// export_env.c
+void		node_dup(t_env **envp, t_env *new, t_env **tmp, t_env **tmp2);
+t_env		*envp_dup(t_env *envp);
+void		order_dup(t_env *sorted, t_env *first, int len);
+void		print_node(t_env *tmp);
+int			order_env(t_shell *shell);
 // export.c
-void		ft_swap(char **a, char **b);               // a archivo utils???
-int			ft_strcmp(const char *s1, const char *s2);	// a archivo utils???
-t_env		*envp_dup(t_env *envp);					// a archivo manage_env???
-int			order_env(t_shell *shell);				// a archivo manage_env???
-void		ft_split_var(t_env *new, char *value);		// a archivo manage_env???
-void		add_envp(t_shell *shell, t_env *new);		// a archivo manage_env???
+void		add_one_envp(t_env *tmp, t_env *new);
+void		add_envp(t_shell *shell, t_env *new);
 int			check_export(char *args);
 int			export(t_shell *shell, char **args);
 
@@ -154,6 +166,7 @@ int			export(t_shell *shell, char **args);
 void		pwd(t_shell *shell);
 
 // unset.c
+void		unset_node(t_shell *shell, char *arg);
 void		unset(t_shell *shell, char **args);
 
 // EXECUTION
@@ -201,5 +214,16 @@ void		signal_quit(int signal);
 // signal_utils.c
 void		disable_echoctl(void);
 
+// ERRORS AND FREES
+
+// errors.c
+void		malloc_error(void);
+
+// frees.c
+void		free_array(char **array);
+void		free_heredocs(t_shell *shell);
+void		*free_tokens(t_token *token);
+void		*free_groups(t_group *group);
+void		free_all(t_shell *shell);
 
 #endif

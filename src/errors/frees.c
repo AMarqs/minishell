@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free_errors.c                                      :+:      :+:    :+:   */
+/*   frees.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 13:18:31 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/18 17:47:45 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/18 18:47:12 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,6 @@ void	free_array(char **array)
 		i++;
 	}
 	free(array);
-}
-
-void	malloc_error(void)
-{
-	ft_putstr_fd("Fatal error: malloc: memory allocation error\n", 2);
-	exit(1);
 }
 
 void	free_heredocs(t_shell *shell)
@@ -50,6 +44,19 @@ void	free_heredocs(t_shell *shell)
 	}
 }
 
+void	*free_tokens(t_token *token)
+{
+	t_token	*tmp;
+
+	while (token)
+	{
+		tmp = token->next;
+		free(token);
+		token = tmp;
+	}
+	return (NULL);
+}
+
 void	*free_groups(t_group *group)
 {
 	t_group	*tmp;
@@ -60,19 +67,6 @@ void	*free_groups(t_group *group)
 		free(group->word);
 		free(group);
 		group = tmp;
-	}
-	return (NULL);
-}
-
-void	*free_tokens(t_token *token)
-{
-	t_token	*tmp;
-
-	while (token)
-	{
-		tmp = token->next;
-		free(token);
-		token = tmp;
 	}
 	return (NULL);
 }
@@ -93,8 +87,6 @@ void	free_all(t_shell *shell)
 		tmp = aux;
 	}
 	free(shell->line);
-	// if (shell->path)
-	// 	free(shell->path);
 	shell->tokens = free_tokens(shell->tokens);
 	shell->groups = free_groups(shell->groups);
 	free(shell);

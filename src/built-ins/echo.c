@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 20:02:29 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/08 18:26:16 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/18 18:43:18 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,11 @@ void	ft_echo(t_shell *shell, char **args)
 		i++;
 		n_flag = 1;
 	}
-	while (args[i])
+	while (args[i++])
 	{
-		ft_putstr_fd(args[i], 1);
-		if (args[i + 1])
+		ft_putstr_fd(args[i - 1], 1);
+		if (args[i])
 			ft_putstr_fd(" ", 1);
-		i++;
 	}
 	if (!n_flag)
 		ft_putstr_fd("\n", 1);
