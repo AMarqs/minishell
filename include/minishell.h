@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/18 20:23:00 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/18 20:33:31 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 // LIBRARIES
 
-// personal
+// Personal
 # include "../libft/includes/libft.h"
 
-// external
+// External
 # include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -38,7 +38,9 @@
 // Global Variable
 extern volatile sig_atomic_t	g_signal;
 
-// DEFINES structures
+//--------------------//
+// DEFINES structures //
+//--------------------//
 
 // TOKENS
 
@@ -102,7 +104,7 @@ typedef struct s_env
 typedef struct s_shell
 {
 	char		*line;
-	char		*path;                //// BORRAR SI NO SE USA
+	char		*path;
 	int			exit_status;
 	int			prev_status;
 	t_token		*tokens;
@@ -110,22 +112,23 @@ typedef struct s_shell
 	t_env		*envp;
 }				t_shell;
 
-// PROTOTYPES
+//-----------------------------------------------------------------------
 
 void		parse_line(t_shell *shell);
 void		group_tokens(t_shell *shell);
 void		exec_everything(t_shell *shell);
-void		free_all(t_shell *shell);
-void		malloc_error(void);
-void		free_array(char **array);
-void		*free_groups(t_group *group);
-void		*free_tokens(t_token *token);
 int			save_restore_fds(int i);
 void		print_groups(t_group *group); ///////// BORRAR FUNCION
 void		print_array(char **array); ///////// BORRAR FUNCION
 char		*search_env(t_shell *shell, char *key);
 
-// BULT-INS
+// utils.c
+char		**ft_split_env(char *str, char del);
+int			ft_isspace(char c);
+
+//----------//
+// BULT-INS //
+//----------//
 
 // cd.c
 void		args_cd_error(t_shell *shell);
@@ -169,7 +172,13 @@ void		pwd(t_shell *shell);
 void		unset_node(t_shell *shell, char *arg);
 void		unset(t_shell *shell, char **args);
 
-// EXECUTION
+//---------//
+// PARSING //
+//---------//
+
+//-----------//
+// EXECUTION //
+//-----------//
 
 // environment.c
 t_env		*environ(t_shell *shell, char **envp);
@@ -193,13 +202,9 @@ void		subs_hd(t_shell *shell, char *line, int fd);
 void		create_heredoc(t_shell *shell, t_group *group, int hd_num);
 void		read_heredocs(t_shell *shell);
 
-// SRC
-
-// utils.c
-char		**ft_split_env(char *str, char del);
-int			ft_isspace(char c);
-
-// SIGNALS
+//---------//
+// SIGNALS //
+//---------//
 
 // signal_init.c
 void		init_signal(void);
@@ -214,7 +219,9 @@ void		signal_quit(int signal);
 // signal_utils.c
 void		disable_echoctl(void);
 
-// ERRORS AND FREES
+//------------------//
+// ERRORS AND FREES //
+//------------------//
 
 // errors.c
 void		malloc_error(void);

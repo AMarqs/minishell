@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/30 13:55:31 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/02 19:53:48 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/18 20:34:38 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
  *		- set: The reference set of characters to trim.
  * Returns the trimmed string or NULL if the allocation fails.
  */
-
 
 /* Checks if a character is in a set of characters. */
 

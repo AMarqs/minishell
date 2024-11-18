@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/01 17:13:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/02 20:20:31 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/18 20:34:46 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
  * Returns the array of new strings resulting from the split
  * or NULL in case an allocation fails.
  */
-
 
 /* Counts the number of words in a string. */
 static size_t	ft_count_words(const char *str, char c)

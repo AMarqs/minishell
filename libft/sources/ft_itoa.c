@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 17:11:22 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/02 20:33:19 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/18 20:34:22 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
  *		- n: The integer to be converted.
  * Returns the string representing the integer or NULL if the allocation fails.
  */
-
 
 /* Returns the number of digits in a number. */
 
