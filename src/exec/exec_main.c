@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/15 18:22:59 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/18 18:13:28 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ char	**get_args(t_group *groups)
 	return (args);
 }
 
-void	exec_builtin(t_shell *shell, t_group *group, int i, int child)
+void	exec_builtin(t_shell *shell, t_group *group, int i)
 {
 	char	**args;
 
@@ -103,13 +103,12 @@ void	exec_builtin(t_shell *shell, t_group *group, int i, int child)
 	if (i == 3)
 		env(shell);
 	if (i == 4)
-		exit_shell(shell, child, args);
+		exit_shell(shell, args);
 	if (i == 5)
 	{
 		if (!export(shell, args))
 		{
-			if (!child)
-				free_all(shell);
+			free_all(shell);
 			free(args);
 			malloc_error();
 		}
@@ -121,28 +120,37 @@ void	exec_builtin(t_shell *shell, t_group *group, int i, int child)
 	free(args);
 }
 
-char	*find_cmd(t_group *group)
+char	*find_cmd(t_shell *shell, t_group *group)
 {
 	t_group	*tmp;
+	char	*cmd;
 
 	tmp = group;
 	while (tmp && tmp->type != PIPE)
 	{
 		if (tmp->type == CMD)
-			return (tmp->word);
+		{
+			cmd = ft_strdup(tmp->word);
+			if (!cmd)
+			{
+				free_all(shell);
+				malloc_error();
+			}
+			return (cmd);
+		}
 		tmp = tmp->next;
 	}
 	return (NULL);
 }
 
-char	**get_envp(t_env *envp)
+char	**get_envp(t_shell *shell)
 {
 	t_env	*tmp;
 	char	**env;
 	int		i;
 	char	*tmp2;
 
-	tmp = envp;
+	tmp = shell->envp;
 	i = 0;
 	while (tmp)
 	{
@@ -151,18 +159,40 @@ char	**get_envp(t_env *envp)
 	}
 	env = malloc(sizeof(char *) * (i + 1));
 	if (!env)
-		return (NULL); /////////////////////// ADD ERROR FUNCTION
+	{
+		free_all(shell);
+		malloc_error();
+	}
 	i = 0;
-	tmp = envp;
+	tmp = shell->envp;
 	while (tmp)
 	{
 		if (tmp->value)
 		{
 			tmp2 = ft_strjoin(tmp->key, "=");
 			env[i] = ft_strjoin(tmp2, tmp->value);
+			free(tmp2);
+			if (!env[i])
+			{
+				free_all(shell);
+				while (--i >= 0)
+					free(env[i]);
+				free(env);
+				malloc_error();
+			}
 		}
 		else
+		{
 			env[i] = ft_strdup(tmp->key);
+			if (!env[i])
+			{
+				free_all(shell);
+				while (--i >= 0)
+					free(env[i]);
+				free(env);
+				malloc_error();
+			}
+		}
 		i++;
 		tmp = tmp->next;
 	}
@@ -174,6 +204,7 @@ char	*get_path(t_shell *shell, char **env, char *cmd)
 {
 	int		i;
 	char	*tmp;
+	char	*aux;
 	char	**path;
 
 	path = NULL;
@@ -184,6 +215,12 @@ char	*get_path(t_shell *shell, char **env, char *cmd)
 		{
 			shell->path = env[i] + 5;
 			path = ft_split(env[i] + 5, ':');
+			if (!path)
+			{
+				free_all(shell);
+				free(cmd);
+				malloc_error();
+			}
 		}
 		i++;
 	}
@@ -195,14 +232,32 @@ char	*get_path(t_shell *shell, char **env, char *cmd)
 	while (path[i])
 	{
 		tmp = ft_strjoin(path[i], "/");
-		path[i] = ft_strjoin(tmp, cmd);
-		if (!access(path[i], F_OK))
+		if (!tmp)
 		{
-			free(tmp);
-			return (path[i]);
+			free_all(shell);
+			free_array(path);
+			free(cmd);
+			malloc_error();
 		}
+		aux = ft_strjoin(tmp, cmd);
+		if (!aux)
+		{
+			free_all(shell);
+			free(tmp);
+			free(cmd);
+			free_array(path);
+			malloc_error();
+		}
+		free(tmp);
+		if (!access(aux, F_OK))
+		{
+			free_array(path);
+			return (aux);
+		}
+		free(aux);
 		i++;
 	}
+	free_array(path);
 	return (NULL);
 }
 
@@ -239,22 +294,22 @@ void	exec_cmd(t_shell *shell, t_group *group)
 	char	**env;
 	char	*found;
 	
-	cmd = find_cmd(group);
+	cmd = find_cmd(shell, group);
 	if (!cmd)
 		return ;
 	i = is_builtin(cmd);
 	if (i)
 	{
-		exec_builtin(shell, group, i, count_pipes(shell->groups));
+		free(cmd);
+		exec_builtin(shell, group, i);
 		return ;
 	}
-	args = get_args(group);
-	if (!args)
-		malloc_error();
-	env = get_envp(shell->envp);
+	env = get_envp(shell);
 	if (!env)
 	{
-		free(args);
+		free(cmd);
+		free_all(shell);
+		save_restore_fds(1);
 		malloc_error();
 	}
 	if ((cmd[0] == '.' && cmd[1] == '/') || cmd[0] == '/'
@@ -267,6 +322,11 @@ void	exec_cmd(t_shell *shell, t_group *group)
 			ft_putstr_fd(": ", 2);
 			ft_putstr_fd("No such file or directory\n", 2);
 			shell->exit_status = 127;
+			i = 0;
+			while (env[i])
+				free(env[i++]);
+			free(env);
+			free(cmd);
 			return ;
 		}
 		else if (is_directory(cmd))
@@ -276,6 +336,11 @@ void	exec_cmd(t_shell *shell, t_group *group)
 			ft_putstr_fd(": ", 2);
 			ft_putstr_fd("Is a directory\n", 2);
 			shell->exit_status = 126;
+			i = 0;
+			while (env[i])
+				free(env[i++]);
+			free(env);
+			free(cmd);
 			return ;
 		}
 		if (access(cmd, X_OK | R_OK))
@@ -285,6 +350,11 @@ void	exec_cmd(t_shell *shell, t_group *group)
 			ft_putstr_fd(": ", 2);
 			perror("");
 			shell->exit_status = 126;
+			i = 0;
+			while (env[i])
+				free(env[i++]);
+			free(env);
+			free(cmd);
 			return ;
 		}
 	}
@@ -301,6 +371,11 @@ void	exec_cmd(t_shell *shell, t_group *group)
 				ft_putstr_fd(": ", 2);
 				ft_putstr_fd("No such file or directory\n", 2);
 				shell->exit_status = 127;
+				i = 0;
+				while (env[i])
+					free(env[i++]);
+				free(env);
+				free(cmd);
 				return ;
 			}
 			else if (is_directory(cmd))
@@ -310,6 +385,11 @@ void	exec_cmd(t_shell *shell, t_group *group)
 				ft_putstr_fd(": ", 2);
 				ft_putstr_fd("Is a directory\n", 2);
 				shell->exit_status = 126;
+				i = 0;
+				while (env[i])
+					free(env[i++]);
+				free(env);
+				free(cmd);
 				return ;
 			}
 		}
@@ -322,6 +402,11 @@ void	exec_cmd(t_shell *shell, t_group *group)
 				ft_putstr_fd(": ", 2);
 				ft_putstr_fd("command not found\n", 2);
 				shell->exit_status = 127;
+				i = 0;
+				while (env[i])
+					free(env[i++]);
+				free(env);
+				free(cmd);
 				return ;
 			}
 		}
@@ -332,10 +417,18 @@ void	exec_cmd(t_shell *shell, t_group *group)
 			ft_putstr_fd(": ", 2);
 			ft_putstr_fd("command not found\n", 2);
 			shell->exit_status = 127;
+			i = 0;
+			while (env[i])
+				free(env[i++]);
+			free(env);
+			free(cmd);
 			return ;
 		}
 		else
+		{
+			free(cmd);
 			cmd = found;
+		}
 	}
 	if (access(cmd, X_OK))
 	{
@@ -344,6 +437,11 @@ void	exec_cmd(t_shell *shell, t_group *group)
 		ft_putstr_fd(": ", 2);
 		perror("");  // Permission denied
 		shell->exit_status = 126;
+		i = 0;
+		while (env[i])
+			free(env[i++]);
+		free(env);
+		free(cmd);
 		return ;
 	}
 	if (access(cmd, R_OK))
@@ -353,10 +451,31 @@ void	exec_cmd(t_shell *shell, t_group *group)
 		ft_putstr_fd(": ", 2);
 		perror("");  // Permission denied
 		shell->exit_status = 2;
+		i = 0;
+		while (env[i])
+			free(env[i++]);
+		free(env);
+		free(cmd);
 		return ;
 	}
+	args = get_args(group);
+	if (!args)
+	{
+		i = 0;
+		while (env[i])
+			free(env[i++]);
+		free(env);
+		free(cmd);
+		free_all(shell);
+		save_restore_fds(1);
+		malloc_error();
+	}
 	execve(cmd, args, env);
+	free(cmd);
 	free(args);
+	i = 0;
+	while (env[i])
+		free(env[i++]);
 	free(env);
 }
 
@@ -407,6 +526,7 @@ void	exec_everything(t_shell *shell)
 {
 	int		pipe_n;
 	int		i;
+	int 	j;
 	int 	pipe_fd[2];
 	int 	prev_fd;
 	t_group *group;
@@ -415,24 +535,24 @@ void	exec_everything(t_shell *shell)
 	int		fork_n;
 
 	group = shell->groups;
-	if (!save_restore_fds(0))
-	{
-		free_all(shell);
-		exit(1);
-	}
+	// if (!save_restore_fds(0))
+	// {
+	// 	free_all(shell);
+	// 	exit(1);
+	// }
 	read_heredocs(shell);
-	cmd = find_cmd(group);
+	cmd = find_cmd(shell, group);
 	if (!cmd)
 	{
 		if (group)
 		{
 			handle_redirections(shell, group);
 		}
-		if (!save_restore_fds(1))
-		{
-			free_all(shell);
-			exit(1);
-		}
+		// if (!save_restore_fds(1))
+		// {
+		// 	free_all(shell);
+		// 	exit(1);
+		// }
 		return ;
 	}
 	if (g_signal != SIGINT)
@@ -442,9 +562,21 @@ void	exec_everything(t_shell *shell)
 		pipe_n = count_pipes(shell->groups);
 		i = 0;
 		fork_n = 0;
-		if (pipe_n == 0 && is_builtin(cmd))
+		j = is_builtin(cmd);
+		free(cmd);
+		if (pipe_n == 0 && j)
 		{
+			if (!save_restore_fds(0))
+			{
+				free_all(shell);
+				exit(1);
+			}
 			exec_block(shell, group);
+			if (!save_restore_fds(1))
+			{
+				free_all(shell);
+				exit(1);
+			}
 		}
 		else
 		{
@@ -482,17 +614,15 @@ void	exec_everything(t_shell *shell)
 				if (pids[i] == 0)
 				{
 					signal(SIGINT, SIG_DFL);
-					signal(SIGQUIT, SIG_DFL); 
+					signal(SIGQUIT, SIG_DFL);
 					if (pipe_fd[0] >= 0)
 						close(pipe_fd[0]);
 					redirect_pipes(prev_fd, pipe_fd[1]);
 					exec_block(shell, group);
-					exit(shell->exit_status);
-				}
-				else if (pids[i] < 0)
-				{
-					perror("fork");
-					shell->exit_status = 1;
+					i = shell->exit_status;
+					free(pids);
+					free_all(shell);
+					exit(i);
 				}
 				if (prev_fd != -1) 
 					close(prev_fd); // Close previous read end in parent
@@ -512,16 +642,18 @@ void	exec_everything(t_shell *shell)
 			}
 			free(pids);
 		}
-		if (fork_n < pipe_n + 1 && !is_builtin(cmd))
+		if (fork_n < pipe_n + 1 && !j)
 		{
 			free_all(shell);
+			write(1, "rest1\n", 6);
+			save_restore_fds(1);
 			exit(1);
 		}
 	}
 	init_signal();
-	if (!save_restore_fds(1))
-	{
-		free_all(shell);
-		exit(1);
-	}
+	// if (!save_restore_fds(1))
+	// {
+	// 	free_all(shell);
+	// 	exit(1);
+	// }
 }

@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/15 18:24:52 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/18 12:51:30 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ void		ft_echo(t_shell *shell, char **args);
 void		env(t_shell *shell);
 
 // exit.c
-void		exit_shell(t_shell *shell, int x, char **args);
+void		exit_shell(t_shell *shell, char **args);
 
 // export.c
 void		ft_swap(char **a, char **b);               // a archivo utils???
@@ -171,7 +171,7 @@ void		handle_redirections(t_shell *shell, t_group *group);
 
 // get_stuff.c
 char		**get_args(t_group *groups);
-char		**get_envp(t_env *envp);
+char		**get_envp(t_shell *shell);
 char		*get_path(t_shell *shell, char **env, char *cmd);
 
 // heredoc.c

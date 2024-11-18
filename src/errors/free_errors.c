@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/01 13:18:31 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/15 18:24:43 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/18 17:47:45 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,10 @@ void	free_all(t_shell *shell)
 		tmp = aux;
 	}
 	free(shell->line);
-	free(shell->path);
-	free_tokens(shell->tokens);
-	free_groups(shell->groups);
+	// if (shell->path)
+	// 	free(shell->path);
+	shell->tokens = free_tokens(shell->tokens);
+	shell->groups = free_groups(shell->groups);
 	free(shell);
 	rl_clear_history();
 }

@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:09:44 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/15 18:10:11 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/18 14:16:04 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,11 @@ int	exit_args(char **args)
 	return (0);
 }
 
-void	exit_shell(t_shell *shell, int child, char **args)
+void	exit_shell(t_shell *shell, char **args)
 {
 	int	i;
 
-	ft_putstr_fd("exit\n", 1);
+	//ft_putstr_fd("exit\n", 1);
 	if (args)
 	{
 		i = exit_args(args);
@@ -63,10 +63,7 @@ void	exit_shell(t_shell *shell, int child, char **args)
 	}
 	free(args);
 	i = shell->exit_status;
-	if (!child)
-	{
-		save_restore_fds(1);
-		free_all(shell);
-	}
+	save_restore_fds(1);
+	free_all(shell);
 	exit(i);
 }

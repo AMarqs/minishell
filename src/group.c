@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/15 18:35:36 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/18 18:08:56 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,6 @@ char	*space_split(t_shell *shell, char *str, char *new, int *is_var)
 				free_all(shell);
 				malloc_error();
 			}
-			free(str);
 			str = NULL;
 			*is_var = 1;
 		}
@@ -508,6 +507,7 @@ void	syntax_check(t_shell *shell)
 				print_ambiguous(tmp->first_token);
 				ft_putstr_fd(": ambiguous redirect\n", 2);
 				shell->exit_status = 1;
+				break ;
 			}
 			else
 				tmp->next->type = FILENAME;
