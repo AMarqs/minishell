@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:09:44 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/18 19:10:42 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/19 12:21:04 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,14 @@ void	exit_args(t_shell *shell, char **args)
 			i++;
 		while (ft_isspace(args[0][i]))
 			i++;
-		while (args[0][i])
+		while (args[0][i++])
 		{
-			if (ft_isdigit(args[0][i]) == 0 && args[0][i] != ' '
-				&& args[0][i] != '\t')
+			if (ft_isdigit(args[0][i - 1]) == 0 && args[0][i - 1] != ' '
+				&& args[0][i - 1] != '\t')
+			{
 				num_exit_error(shell, args[0]);
-			i++;
+				break ;
+			}
 		}
 	}
 	if (arg > 1 && shell->exit_status == 0)

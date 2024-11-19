@@ -6,14 +6,16 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/18 20:33:31 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:14:16 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-// LIBRARIES
+//-----------//
+// LIBRARIES //----------------------------------------------------------------
+//-----------//
 
 // Personal
 # include "../libft/includes/libft.h"
@@ -39,7 +41,7 @@
 extern volatile sig_atomic_t	g_signal;
 
 //--------------------//
-// DEFINES structures //
+// DEFINES structures //-------------------------------------------------------
 //--------------------//
 
 // TOKENS
@@ -112,22 +114,56 @@ typedef struct s_shell
 	t_env		*envp;
 }				t_shell;
 
-//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-void		parse_line(t_shell *shell);
-void		group_tokens(t_shell *shell);
 void		exec_everything(t_shell *shell);
 int			save_restore_fds(int i);
 void		print_groups(t_group *group); ///////// BORRAR FUNCION
 void		print_array(char **array); ///////// BORRAR FUNCION
-char		*search_env(t_shell *shell, char *key);
+
+//------//
+// MAIN //---------------------------------------------------------------------
+//------//
+
+// main.c
+int			event_hook_readline(void);
+t_shell		*init_shell(char **envp);
+void		main_loop(t_shell *shell, char *line);
+int			main(int argc, char **argv, char **envp);
+
+// tester.c
+void		main_tester(char **argv, t_shell *shell);
 
 // utils.c
 char		**ft_split_env(char *str, char del);
 int			ft_isspace(char c);
+char		*better_strjoin(char const *s1, char const *s2);
+char		*space_split(t_shell *shell, char *str, char *new, int *is_var);
+
+//--------------//
+// 	ENVIRONMENT //-------------------------------------------------------------
+//--------------//
+
+// environment.c
+void		free_env_value(char **tmp, t_env *new);
+void		free_environ(t_shell *shell, t_env *tmp, int i);
+t_env		*env_values(char *env);
+t_env		*environ(t_shell *shell, char **envp);
+char		*search_env(t_shell *shell, char *key);
+
+// env_variable.c
+void		set_pwd(t_shell *shell);
+void		set_oldpwd(t_shell *shell);
+void		set_path(t_shell *shell);
+void		set_(t_shell *shell);
+void		set_env_var(t_shell *shell);
+
+// env_shlvl.c
+void		found_shlvl(t_shell *shell, int i);
+void		set_shlvl(t_shell *shell);
 
 //----------//
-// BULT-INS //
+// BULT-INS //-----------------------------------------------------------------
 //----------//
 
 // cd.c
@@ -153,12 +189,14 @@ void		export_error(t_shell *shell, char *arg);
 void		ft_swap(char **a, char **b);
 int			ft_strcmp(const char *s1, const char *s2);
 void		ft_split_var(t_env *new, char *value);
+
 // export_env.c
 void		node_dup(t_env **envp, t_env *new, t_env **tmp, t_env **tmp2);
 t_env		*envp_dup(t_env *envp);
 void		order_dup(t_env *sorted, t_env *first, int len);
 void		print_node(t_env *tmp);
 int			order_env(t_shell *shell);
+
 // export.c
 void		add_one_envp(t_env *tmp, t_env *new);
 void		add_envp(t_shell *shell, t_env *new);
@@ -173,16 +211,52 @@ void		unset_node(t_shell *shell, char *arg);
 void		unset(t_shell *shell, char **args);
 
 //---------//
-// PARSING //
+// PARSING //------------------------------------------------------------------
 //---------//
 
-//-----------//
-// EXECUTION //
-//-----------//
+// parse.c
+int			is_closed_quotes(int type, char *line, int i);
+int			double_quotes(t_shell *shell, char *line, int i);
+int			tokenize_quotes(t_shell *shell, int type, int j);
+int			token_var(t_shell *shell, char *line, int i);
+void		parse_line(t_shell *shell);
 
-// environment.c
-t_env		*environ(t_shell *shell, char **envp);
-t_env		*env_values(char *env);
+// token.c
+int			token_type(char c);
+t_token		*new_token(enum e_token type, char value);
+void		add_token(t_shell *shell, t_token *new);
+t_token		*create_token(t_shell *shell, enum e_token type, char value);
+
+// group.c
+void		syntax_check(t_shell *shell);
+void		find_cmds(t_shell *shell);
+void		group_tokens(t_shell *shell);
+
+// group_utils.c
+t_group		*new_group(void);
+void		add_group(t_shell *shell, t_group *new);
+int			add_args_group(t_shell *shell, char *str, int is_var);
+
+// group_errors.c
+void		syntax_error_newline(t_shell *shell);
+void		syntax_error(t_shell *shell, char *word);
+void		print_ambiguous(t_token *token);
+void		ambiguous_error(t_shell *shell, t_group *tmp);
+
+// group_char_pipe.c
+t_token		*group_chars(t_shell *shell, t_token *tokens);
+t_token		*group_pipe(t_shell *shell, t_token *tokens);
+
+// group_redir.c
+t_token		*group_in(t_shell *shell, t_token *tokens);
+t_token		*group_out(t_shell *shell, t_token *tokens);
+
+// group_var.c
+char		*subs_var(t_shell *shell, t_token **tokens, char *old);
+
+//-----------//
+// EXECUTION //----------------------------------------------------------------
+//-----------//
 
 // redirections.c
 void		input_redirection(t_shell *shell, char *file);
@@ -203,7 +277,7 @@ void		create_heredoc(t_shell *shell, t_group *group, int hd_num);
 void		read_heredocs(t_shell *shell);
 
 //---------//
-// SIGNALS //
+// SIGNALS //------------------------------------------------------------------
 //---------//
 
 // signal_init.c
@@ -220,11 +294,12 @@ void		signal_quit(int signal);
 void		disable_echoctl(void);
 
 //------------------//
-// ERRORS AND FREES //
+// ERRORS AND FREES //---------------------------------------------------------
 //------------------//
 
 // errors.c
 void		malloc_error(void);
+void		free_all_malloc(t_shell *shell);
 
 // frees.c
 void		free_array(char **array);

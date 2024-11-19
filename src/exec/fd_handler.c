@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fd_handler.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:15:42 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/18 12:32:32 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:24:05 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ int	save_restore_fds(int i)
 	}
 	else
 	{
-		if (dup2(stdin, STDIN_FILENO) == -1 || dup2(stdout, STDOUT_FILENO) == -1)
+		if (dup2(stdin, STDIN_FILENO) == -1
+			|| dup2(stdout, STDOUT_FILENO) == -1)
 		{
 			perror("minishell: Fatal error: dup2");
 			close(stdin);

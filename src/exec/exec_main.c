@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_main.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/18 18:13:28 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:23:05 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,9 +108,8 @@ void	exec_builtin(t_shell *shell, t_group *group, int i)
 	{
 		if (!export(shell, args))
 		{
-			free_all(shell);
 			free(args);
-			malloc_error();
+			free_all_malloc(shell);
 		}
 	}
 	if (i == 6)
@@ -132,10 +131,7 @@ char	*find_cmd(t_shell *shell, t_group *group)
 		{
 			cmd = ft_strdup(tmp->word);
 			if (!cmd)
-			{
-				free_all(shell);
-				malloc_error();
-			}
+				free_all_malloc(shell);
 			return (cmd);
 		}
 		tmp = tmp->next;
@@ -159,10 +155,7 @@ char	**get_envp(t_shell *shell)
 	}
 	env = malloc(sizeof(char *) * (i + 1));
 	if (!env)
-	{
-		free_all(shell);
-		malloc_error();
-	}
+		free_all_malloc(shell);
 	i = 0;
 	tmp = shell->envp;
 	while (tmp)
@@ -217,17 +210,14 @@ char	*get_path(t_shell *shell, char **env, char *cmd)
 			path = ft_split(env[i] + 5, ':');
 			if (!path)
 			{
-				free_all(shell);
 				free(cmd);
-				malloc_error();
+				free_all_malloc(shell);
 			}
 		}
 		i++;
 	}
 	if (!path)
-	{
 		return (NULL);
-	}
 	i = 0;
 	while (path[i])
 	{
@@ -262,7 +252,7 @@ char	*get_path(t_shell *shell, char **env, char *cmd)
 }
 
 int	check_path(char *path)
-{	
+{
 	int	i;
 
 	i = 1;
@@ -293,7 +283,7 @@ void	exec_cmd(t_shell *shell, t_group *group)
 	char	*cmd;
 	char	**env;
 	char	*found;
-	
+
 	cmd = find_cmd(shell, group);
 	if (!cmd)
 		return ;
@@ -313,7 +303,8 @@ void	exec_cmd(t_shell *shell, t_group *group)
 		malloc_error();
 	}
 	if ((cmd[0] == '.' && cmd[1] == '/') || cmd[0] == '/'
-		|| cmd[ft_strlen(cmd) - 1] == '/' || ft_strnstr(cmd, "/", ft_strlen(cmd)))
+		|| cmd[ft_strlen(cmd) - 1] == '/'
+		|| ft_strnstr(cmd, "/", ft_strlen(cmd)))
 	{
 		if (access(cmd, F_OK))
 		{
@@ -545,9 +536,7 @@ void	exec_everything(t_shell *shell)
 	if (!cmd)
 	{
 		if (group)
-		{
 			handle_redirections(shell, group);
-		}
 		// if (!save_restore_fds(1))
 		// {
 		// 	free_all(shell);
@@ -582,10 +571,7 @@ void	exec_everything(t_shell *shell)
 		{
 			pids = malloc(sizeof(int) * (pipe_n + 1));
 			if (!pids)
-			{
-				free_all(shell);
-				malloc_error();
-			}
+				free_all_malloc(shell);
 			while (i <= pipe_n)
 			{
 				if (i < pipe_n)
@@ -624,9 +610,9 @@ void	exec_everything(t_shell *shell)
 					free_all(shell);
 					exit(i);
 				}
-				if (prev_fd != -1) 
+				if (prev_fd != -1)
 					close(prev_fd); // Close previous read end in parent
-				if (pipe_fd[1] != -1) 
+				if (pipe_fd[1] != -1)
 					close(pipe_fd[1]); // Close write end in parent
 				advance_group(&group);
 				prev_fd = pipe_fd[0];

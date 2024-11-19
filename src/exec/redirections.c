@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 14:01:08 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/15 13:57:43 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:30:01 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ void	append_redirection(t_shell *shell, char *file)
 void	heredoc_redirection(t_shell *shell, char *doc)
 {
 	int		fd;
-	
+
 	fd = open(doc, O_RDONLY);
 	if (fd < 0)
 	{

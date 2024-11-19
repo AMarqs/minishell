@@ -1,29 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   errors.c                                           :+:      :+:    :+:   */
+/*   tester.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/18 18:44:53 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/19 13:38:09 by albmarqu         ###   ########.fr       */
+/*   Created: 2024/11/19 13:45:03 by albmarqu          #+#    #+#             */
+/*   Updated: 2024/11/19 13:56:24 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-
-
-
-
-void	malloc_error(void)
+void	main_tester(char **argv, t_shell *shell)
 {
-	ft_putstr_fd("Fatal error: malloc: memory allocation error\n", 2);
-	exit(1);
-}
+	char	*line2;
 
-void	free_all_malloc(t_shell *shell)
-{
-	free_all(shell);
-	malloc_error();
+	shell->path = NULL;
+	line2 = ft_substr(argv[2], 0, ft_strlen(argv[2]) - 1);
+	if (!line2)
+		free_all_malloc(shell);
+	shell->line = line2;
+	if (line2[0] != '\0')
+	{
+		shell->exit_status = 0;
+		parse_line(shell);
+		group_tokens(shell);
+		if (shell->groups && shell->exit_status == 0)
+			exec_everything(shell);
+		shell->prev_status = shell->exit_status;
+	}
 }

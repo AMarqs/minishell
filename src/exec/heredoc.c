@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:56:01 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/15 13:41:35 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:28:45 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,10 @@ void	subs_hd(t_shell *shell, char *line, int fd)
 	char	*tmp;
 	int		i;
 	int		j;
-	int 	len;
+	int		len;
 	char	*var;
 	char	*exit_status;
-	
+
 	i = 0;
 	var = NULL;
 	while (line[i])
@@ -44,7 +44,7 @@ void	subs_hd(t_shell *shell, char *line, int fd)
 		if (line[i] == '$')
 		{
 			if (!line[i + 1] || !(line[i + 1] == '_'
-				|| ft_isalpha(line[i + 1]) || line[i + 1] == '?'))
+					|| ft_isalpha(line[i + 1]) || line[i + 1] == '?'))
 			{
 				ft_putchar_fd('$', fd);
 				if (line[i + 1] == '\0')
@@ -58,8 +58,7 @@ void	subs_hd(t_shell *shell, char *line, int fd)
 					if (!exit_status)
 					{
 						close(fd);
-						free_all(shell);
-						malloc_error();
+						free_all_malloc(shell);
 					}
 					ft_putstr_fd(exit_status, fd);
 				}
@@ -69,7 +68,8 @@ void	subs_hd(t_shell *shell, char *line, int fd)
 					len = 0;
 					if (line[i] && (ft_isalpha(line[i]) || line[i + 1] == '_'))
 					{
-						while (line[i] && (ft_isalnum(line[i]) || line[i] == '_'))
+						while (line[i] && (ft_isalnum(line[i])
+								|| line[i] == '_'))
 						{
 							len++;
 							i++;
@@ -78,8 +78,7 @@ void	subs_hd(t_shell *shell, char *line, int fd)
 						if (!var)
 						{
 							close(fd);
-							free_all(shell);
-							malloc_error();
+							free_all_malloc(shell);
 						}
 						i = j;
 						j = 0;
@@ -94,17 +93,13 @@ void	subs_hd(t_shell *shell, char *line, int fd)
 						tmp = search_env(shell, var);
 						free(var);
 						if (tmp)
-						{
 							ft_putstr_fd(tmp, fd);
-						}
 					}
 				}
 			}
 		}
 		else
-		{
 			ft_putchar_fd(line[i], fd);
-		}
 		i++;
 	}
 	ft_putchar_fd('\n', fd);
@@ -116,20 +111,14 @@ void	create_heredoc(t_shell *shell, t_group *group, int hd_num)
 	char	*line;
 	char	*doc;
 	char	*num;
-	
+
 	doc = "/tmp/heredoc";
 	num = ft_itoa(hd_num);
 	if (!num)
-	{
-		free_all(shell);
-		malloc_error();
-	}
+		free_all_malloc(shell);
 	doc = ft_strjoin(doc, num);
 	if (!doc)
-	{
-		free_all(shell);
-		malloc_error();
-	}
+		free_all_malloc(shell);
 	group->file = doc;
 	fd = open(doc, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
@@ -144,7 +133,8 @@ void	create_heredoc(t_shell *shell, t_group *group, int hd_num)
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || (ft_strcmp(line, group->next->word) == 0) || g_signal == SIGINT)
+		if (!line || (ft_strcmp(line, group->next->word) == 0)
+			|| g_signal == SIGINT)
 		{
 			free(line);
 			break ;

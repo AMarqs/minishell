@@ -5,9 +5,19 @@ HEADERS = -I $(LIBFT)
 LIBRARIES = $(LIBFT)/libft.a
 
 SRCS = 	main.c \
-		parse.c \
-		group.c \
+		tester.c \
 		utils.c \
+		environment/environment.c \
+		environment/env_variable.c \
+		environment/env_shlvl.c \
+		parse/parse.c \
+		parse/token.c \
+		parse/group.c \
+		parse/group_utils.c \
+		parse/group_errors.c \
+		parse/group_char_pipe.c \
+		parse/group_redir.c \
+		parse/group_var.c \
 		built-ins/cd.c \
 		built-ins/echo.c \
 		built-ins/env.c \
