@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils2.c                                           :+:      :+:    :+:   */
+/*   utils_env.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 12:37:11 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/20 13:14:47 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/20 21:47:44 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,4 +62,65 @@ char	**ft_split_env(char *str, char del)
 	if (!array)
 		return (NULL);
 	return (array);
+}
+
+void	fill_envp(t_shell *shell, char **env, t_env *tmp)
+{
+	char	*tmp2;
+	int		i;
+
+	i = 0;
+	while (tmp)
+	{
+		if (tmp->value)
+		{
+			tmp2 = ft_strjoin(tmp->key, "=");
+			env[i] = ft_strjoin(tmp2, tmp->value);
+			free(tmp2);
+		}
+		else
+			env[i] = ft_strdup(tmp->key);
+		if (!env[i])
+		{
+			while (--i >= 0)
+				free(env[i]);
+			free(env);
+			free_all_malloc(shell);
+		}
+		i++;
+		tmp = tmp->next;
+	}
+	env[i] = NULL;
+}
+
+char	**get_envp(t_shell *shell)
+{
+	t_env	*tmp;
+	char	**env;
+	int		i;
+
+	tmp = shell->envp;
+	i = 0;
+	while (tmp)
+	{
+		i++;
+		tmp = tmp->next;
+	}
+	env = malloc(sizeof(char *) * (i + 1));
+	if (!env)
+		free_all_malloc(shell);
+	tmp = shell->envp;
+	fill_envp(shell, env, tmp);
+	return (env);
+}
+
+void	free_envp(char **env, char *cmd)
+{
+	int	i;
+
+	i = 0;
+	while (env[i])
+		free(env[i++]);
+	free(env);
+	free(cmd);
 }

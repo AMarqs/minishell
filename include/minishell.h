@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/20 18:47:57 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/20 21:50:29 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,9 +140,12 @@ char	*split_notspace(t_shell *shell, char *str, char *new, char *aux);
 char	*split_isspace(t_shell *shell, char *str, char *new, int *is_var);
 char	*space_split(t_shell *shell, char *str, char *new, int *is_var);
 
-// utils2.c
+// utils_env.c
 char	**ft_subs_env(char **array, char *str, int j, int k);
 char	**ft_split_env(char *str, char del);
+void	fill_envp(t_shell *shell, char **env, t_env *tmp);
+char	**get_envp(t_shell *shell);
+void	free_envp(char **env, char *cmd);
 
 //--------------//
 // 	ENVIRONMENT //-------------------------------------------------------------
@@ -275,17 +278,45 @@ char	*subs_var(t_shell *shell, t_token **tokens, char *old);
 // exec_main.c
 void	exec_everything(t_shell *shell);
 
+// execution.c
+void	exec_cmd(t_shell *shell, t_group *group);
+void	exec_block(t_shell *shell, t_group *group);
+
+// exec_commands.c
+int		check_script(t_shell *shell, char *cmd, char **env);
+int		check_command_file(t_shell *shell, char *cmd, char **env);
+char	*check_command(t_shell *shell, char *cmd, char **env);
+void	check_cmd(t_shell *shell, t_group *group, char *cmd, char **env); ///// DIVIDIR ESTO
+
+// built-ins.c
+int		is_builtin(char *cmd);
+void	exec_builtin(t_shell *shell, t_group *group, int i);
+
+// exec_utils.c
+int		is_directory(char *path);
+int		count_pipes(t_group *groups);
+int		check_path(char *path);
+void	redirect_pipes(int prev_fd, int next_fd);
+void	advance_group(t_group **group);
+
+// get_stuff.c
+char	*get_cmd(t_shell *shell, t_group *group);
+char	**get_args(t_group *groups);
+char	*get_path(t_shell *shell, char **env, char *cmd);
+
+// exec_errors.c
+void	no_file_error(t_shell *shell, char *cmd);
+void	is_directory_error(t_shell *shell, char *cmd);
+void	permission_denied_error(t_shell *shell, char *cmd);
+void	command_not_found_error(t_shell *shell, char *cmd);
+void	cannot_open_error(t_shell *shell, char *cmd);
+
 // redirections.c
 void	input_redirection(t_shell *shell, char *file);
 void	output_redirection(t_shell *shell, char *file);
 void	append_redirection(t_shell *shell, char *file);
 void	heredoc_redirection(t_shell *shell, char *doc);
 void	handle_redirections(t_shell *shell, t_group *group);
-
-// get_stuff.c
-char	**get_args(t_group *groups);
-char	**get_envp(t_shell *shell);
-char	*get_path(t_shell *shell, char **env, char *cmd);
 
 // heredoc.c
 void	heredoc_loop(t_shell *shell, t_group *group, int fd);

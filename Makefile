@@ -7,7 +7,7 @@ LIBRARIES = $(LIBFT)/libft.a
 SRCS = 	main.c \
 		tester.c \
 		utils1.c \
-		utils2.c \
+		utils_env.c \
 		environment/environment.c \
 		environment/env_variable.c \
 		environment/env_shlvl.c \
@@ -29,12 +29,18 @@ SRCS = 	main.c \
 		built-ins/pwd.c \
 		built-ins/unset.c \
 		exec/exec_main.c \
-		exec/fd_handler.c \
+		exec/execution.c \
+		exec/exec_command.c \
+		exec/exec_built_ins.c \
+		exec/exec_utils.c \
+		exec/get_stuff.c \
 		exec/redirections.c \
 		exec/heredoc.c \
 		exec/subs_heredoc.c \
+		exec/fd_handler.c \
 		errors/frees.c \
 		errors/errors.c \
+		errors/exec_errors.c \
 		signals/signal_init.c \
 		signals/signal_handler.c \
 		signals/signal_utils.c \
