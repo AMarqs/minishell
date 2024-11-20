@@ -6,7 +6,8 @@ LIBRARIES = $(LIBFT)/libft.a
 
 SRCS = 	main.c \
 		tester.c \
-		utils.c \
+		utils1.c \
+		utils2.c \
 		environment/environment.c \
 		environment/env_variable.c \
 		environment/env_shlvl.c \
@@ -15,7 +16,7 @@ SRCS = 	main.c \
 		parse/group.c \
 		parse/group_utils.c \
 		parse/group_errors.c \
-		parse/group_char_pipe.c \
+		parse/group_char.c \
 		parse/group_redir.c \
 		parse/group_var.c \
 		built-ins/cd.c \
@@ -35,7 +36,8 @@ SRCS = 	main.c \
 		errors/errors.c \
 		signals/signal_init.c \
 		signals/signal_handler.c \
-		signals/signal_utils.c
+		signals/signal_utils.c \
+		printf_BORRAR.c
 
 SRC = $(addprefix src/, $(SRCS))
 OBJ_DIR = obj

@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 19:27:26 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/18 19:39:05 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/20 12:26:20 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,16 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return (*str1 - *str2);
 }
 
-void	ft_split_var(t_env *new, char *value)
+void	ft_split_var(t_shell *shell, t_env *new, char *value)
 {
 	char	**tmp;
 
 	tmp = ft_split_env(value, '=');
+	if (!tmp)
+	{
+		free(new);
+		free_all_malloc(shell);
+	}
 	new->key = tmp[0];
 	if (!tmp[1] && value[ft_strlen(value) - 1] == '=')
 		new->value = ft_strdup("");

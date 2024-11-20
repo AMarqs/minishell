@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 20:09:30 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/18 19:53:58 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/20 12:25:55 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ int	export(t_shell *shell, char **args)
 			new = malloc(sizeof(t_env));
 			if (!new)
 				return (0);
-			ft_split_var(new, args[i]);
+			ft_split_var(shell, new, args[i]);
 			new->next = NULL;
 			add_envp(shell, new);
 		}

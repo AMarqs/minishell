@@ -6,11 +6,56 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 18:10:28 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/19 15:03:49 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/20 14:02:31 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"	
+
+t_token	*group_pipe(t_shell *shell, t_token *tokens)
+{
+	t_group	*new;
+
+	new = new_group();
+	if (!new)
+		free_all_malloc(shell);
+	add_group(shell, new);
+	new->type = PIPE;
+	new->word = ft_strdup("|");
+	if (!new->word)
+		free_all_malloc(shell);
+	tokens = tokens->next;
+	return (tokens);
+}
+
+int	syntax_check_loop(t_shell *shell, t_group *tmp, t_group *next)
+{
+	if (tmp->type == REDIR_APPEND || tmp->type == REDIR_HD
+		|| tmp->type == REDIR_IN || tmp->type == REDIR_OUT)
+	{
+		if (!next)
+			syntax_error_newline(shell);
+		else if (next->type != ARG)
+			syntax_error(shell, next->word);
+		else if (next->is_var && next->next && next->next->is_var)
+			ambiguous_error(shell, tmp);
+		if ((!next) || (next->type != ARG) || (next->is_var
+				&& next->next && next->next->is_var))
+			return (0);
+		else
+			next->type = FILENAME;
+	}
+	else if (tmp->type == PIPE)
+	{
+		if (!next)
+			syntax_error_newline(shell);
+		else if (next->type == PIPE)
+			syntax_error(shell, next->word);
+		if ((!next) || (next->type == PIPE))
+			return (0);
+	}
+	return (1);
+}
 
 void	syntax_check(t_shell *shell)
 {
@@ -24,41 +69,8 @@ void	syntax_check(t_shell *shell)
 	}
 	while (tmp)
 	{
-		if (tmp->type == REDIR_APPEND || tmp->type == REDIR_HD
-			|| tmp->type == REDIR_IN || tmp->type == REDIR_OUT)
-		{
-			if (!tmp->next)
-			{
-				syntax_error_newline(shell);
-				break ;
-			}
-			else if (tmp->next->type != ARG)
-			{
-				syntax_error(shell, tmp->next->word);
-				break ;
-			}
-			else if (tmp->next->is_var && tmp->next->next
-				&& tmp->next->next->is_var)
-			{
-				ambiguous_error(shell, tmp);
-				break ;
-			}
-			else
-				tmp->next->type = FILENAME;
-		}
-		else if (tmp->type == PIPE)
-		{
-			if (!tmp->next)
-			{
-				syntax_error_newline(shell);
-				break ;
-			}
-			else if (tmp->next->type == PIPE)
-			{
-				syntax_error(shell, tmp->next->word);
-				break ;
-			}
-		}
+		if (!syntax_check_loop(shell, tmp, tmp->next))
+			break ;
 		tmp = tmp->next;
 	}
 }
