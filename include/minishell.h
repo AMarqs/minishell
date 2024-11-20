@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/20 14:50:46 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/20 18:47:57 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -288,12 +288,19 @@ char	**get_envp(t_shell *shell);
 char	*get_path(t_shell *shell, char **env, char *cmd);
 
 // heredoc.c
-int		count_hd(t_group *groups);
-void	subs_hd(t_shell *shell, char *line, int fd);
+void	heredoc_loop(t_shell *shell, t_group *group, int fd);
 void	create_heredoc(t_shell *shell, t_group *group, int hd_num);
 void	read_heredocs(t_shell *shell);
 
+// subs_heredoc.c
+void	print_prev_status(t_shell *shell, int fd);
+void	print_env_var(t_shell *shell, char *line, int *i, int fd);
+void	print_var(t_shell *shell, char *line, int *i, int fd);
+void	subs_hd(t_shell *shell, char *line, int fd);
+
 // fd_handler.c
+int		save_fds(int *stdin, int *stdout);
+int		restore_fds(int stdin, int stdout);
 int		save_restore_fds(int i);
 
 //---------//
@@ -320,6 +327,8 @@ void	disable_echoctl(void);
 // errors.c
 void	malloc_error(void);
 void	free_all_malloc(t_shell *shell);
+void	hd_error(char *word);
+void	perror_error(t_shell *shell, char *word);
 
 // frees.c
 void	free_array(char **array);

@@ -32,6 +32,7 @@ SRCS = 	main.c \
 		exec/fd_handler.c \
 		exec/redirections.c \
 		exec/heredoc.c \
+		exec/subs_heredoc.c \
 		errors/frees.c \
 		errors/errors.c \
 		signals/signal_init.c \
