@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 19:17:37 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/20 21:45:08 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/21 17:56:21 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,21 +81,29 @@ char	*check_command(t_shell *shell, char *cmd, char **env)
 	return (cmd);
 }
 
-void	check_cmd(t_shell *shell, t_group *group, char *cmd, char **env)
+char	*checking_cmd(t_shell *shell, char *cmd, char **env)
 {
-	char	**args;
-
 	if (ft_strnstr(cmd, "/", ft_strlen(cmd)))
 	{
 		if (!check_script(shell, cmd, env))
-			return ;
+			return (NULL);
 	}
 	else
 	{
 		cmd = check_command(shell, cmd, env);
 		if (!cmd)
-			return ;
+			return (NULL);
 	}
+	return (cmd);
+}
+
+void	check_cmd(t_shell *shell, t_group *group, char *cmd, char **env)
+{
+	char	**args;
+
+	cmd = checking_cmd(shell, cmd, env);
+	if (!cmd)
+		return ;
 	if (access(cmd, X_OK))
 		permission_denied_error(shell, cmd);
 	else if (access(cmd, R_OK))
@@ -114,4 +122,3 @@ void	check_cmd(t_shell *shell, t_group *group, char *cmd, char **env)
 	}
 	execve(cmd, args, env);
 }
-

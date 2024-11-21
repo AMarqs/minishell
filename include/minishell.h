@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/20 21:50:29 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/21 19:51:12 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,12 @@ typedef struct s_shell
 	t_group		*groups;
 	t_env		*envp;
 }				t_shell;
+
+typedef struct s_fd
+{
+	int		prev_fd;
+	int		pipe_fd[2];
+}			t_fd;
 
 //-----------------------------------------------------------------------------
 
@@ -259,7 +265,6 @@ char	*group_chars_var(t_shell *shell, t_token **tmp, char *str, int *is_var);
 char	*group_chars_empty(t_shell *shell, t_token **tmp, char *str);
 t_token	*group_chars(t_shell *shell, t_token *tokens);
 
-
 // group_redir.c
 t_token	*group_in(t_shell *shell, t_token *tokens);
 t_token	*group_out(t_shell *shell, t_token *tokens);
@@ -276,9 +281,18 @@ char	*subs_var(t_shell *shell, t_token **tokens, char *old);
 //-----------//
 
 // exec_main.c
+void	exec_one_builtin(t_shell *shell, t_group *group);
+void	start_exec(t_shell *shell, t_group *group, char *cmd);
 void	exec_everything(t_shell *shell);
 
+// exec_pipes.c
+int		init_child(t_shell *shell, int *pipe_fd, int *pids, int i);
+void	exec_child(t_shell *shell, t_group *group, t_fd fd, int *pids);
+int		exec_pipes_loop(t_shell *shell, t_group *group, int fork_n, int *pids);
+int		exec_pipes(t_shell *shell, t_group *group, int fork_n);
+
 // execution.c
+char	*get_cmd(t_shell *shell, t_group *group);
 void	exec_cmd(t_shell *shell, t_group *group);
 void	exec_block(t_shell *shell, t_group *group);
 
@@ -286,7 +300,8 @@ void	exec_block(t_shell *shell, t_group *group);
 int		check_script(t_shell *shell, char *cmd, char **env);
 int		check_command_file(t_shell *shell, char *cmd, char **env);
 char	*check_command(t_shell *shell, char *cmd, char **env);
-void	check_cmd(t_shell *shell, t_group *group, char *cmd, char **env); ///// DIVIDIR ESTO
+char	*checking_cmd(t_shell *shell, char *cmd, char **env);
+void	check_cmd(t_shell *shell, t_group *group, char *cmd, char **env);
 
 // built-ins.c
 int		is_builtin(char *cmd);
@@ -299,9 +314,11 @@ int		check_path(char *path);
 void	redirect_pipes(int prev_fd, int next_fd);
 void	advance_group(t_group **group);
 
-// get_stuff.c
-char	*get_cmd(t_shell *shell, t_group *group);
+// get_args_path.c
+char	**fill_args(t_group *groups, char **args);
 char	**get_args(t_group *groups);
+void	free_path(t_shell *shell, char **path, char *cmd);
+char	*search_command_path(t_shell *shell, char **path, char *cmd);
 char	*get_path(t_shell *shell, char **env, char *cmd);
 
 // exec_errors.c

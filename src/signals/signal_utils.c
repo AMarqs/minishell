@@ -6,18 +6,17 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:56:03 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/13 18:59:28 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/21 19:57:14 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void disable_echoctl(void) 
+void	disable_echoctl(void)
 {
-    struct termios term;
+	struct termios	term;
 
-    // Get the current terminal attributes
-    if (tcgetattr(STDIN_FILENO, &term) == -1)
+	if (tcgetattr(STDIN_FILENO, &term) == -1)
 	{
 		exit(EXIT_FAILURE);
 	}

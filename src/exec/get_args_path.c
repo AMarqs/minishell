@@ -1,35 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_stuff.c                                        :+:      :+:    :+:   */
+/*   get_args_path.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:48:48 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/20 21:49:27 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/21 18:24:30 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-char	*get_cmd(t_shell *shell, t_group *group)
+char	**fill_args(t_group *groups, char **args)
 {
 	t_group	*tmp;
-	char	*cmd;
+	int		i;
 
-	tmp = group;
+	i = 0;
+	tmp = groups;
 	while (tmp && tmp->type != PIPE)
 	{
-		if (tmp->type == CMD)
-		{
-			cmd = ft_strdup(tmp->word);
-			if (!cmd)
-				free_all_malloc(shell);
-			return (cmd);
-		}
+		if (tmp->type == ARG || tmp->type == CMD)
+			args[i++] = tmp->word;
 		tmp = tmp->next;
 	}
-	return (NULL);
+	args[i] = NULL;
+	return (args);
 }
 
 char	**get_args(t_group *groups)
@@ -51,22 +48,48 @@ char	**get_args(t_group *groups)
 	args = malloc(sizeof(char *) * (i + 1));
 	if (!args)
 		return (NULL);
-	i = 0;
-	tmp = groups;
-	while (tmp && tmp->type != PIPE)
-	{
-		if (tmp->type == ARG || tmp->type == CMD)
-			args[i++] = tmp->word;
-		tmp = tmp->next;
-	}
-	args[i] = NULL;
+	args = fill_args(groups, args);
 	return (args);
+}
+
+void	free_path(t_shell *shell, char **path, char *cmd)
+{
+	free(cmd);
+	free_array(path);
+	free_all_malloc(shell);
+}
+
+char	*search_command_path(t_shell *shell, char **path, char *cmd)
+{
+	int		i;
+	char	*tmp;
+	char	*aux;
+
+	i = 0;
+	while (path[i])
+	{
+		tmp = ft_strjoin(path[i], "/");
+		if (!tmp)
+			free_path(shell, path, cmd);
+		aux = ft_strjoin(tmp, cmd);
+		free(tmp);
+		if (!aux)
+			free_path(shell, path, cmd);
+		if (!access(aux, F_OK))
+		{
+			free_array(path);
+			return (aux);
+		}
+		free(aux);
+		i++;
+	}
+	free_array(path);
+	return (NULL);
 }
 
 char	*get_path(t_shell *shell, char **env, char *cmd)
 {
 	int		i;
-	char	*tmp;
 	char	*aux;
 	char	**path;
 
@@ -88,35 +111,6 @@ char	*get_path(t_shell *shell, char **env, char *cmd)
 	}
 	if (!path)
 		return (NULL);
-	i = 0;
-	while (path[i])
-	{
-		tmp = ft_strjoin(path[i], "/");
-		if (!tmp)
-		{
-			free_all(shell);
-			free_array(path);
-			free(cmd);
-			malloc_error();
-		}
-		aux = ft_strjoin(tmp, cmd);
-		if (!aux)
-		{
-			free_all(shell);
-			free(tmp);
-			free(cmd);
-			free_array(path);
-			malloc_error();
-		}
-		free(tmp);
-		if (!access(aux, F_OK))
-		{
-			free_array(path);
-			return (aux);
-		}
-		free(aux);
-		i++;
-	}
-	free_array(path);
-	return (NULL);
+	aux = search_command_path(shell, path, cmd);
+	return (aux);
 }

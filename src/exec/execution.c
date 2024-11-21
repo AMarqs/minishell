@@ -6,11 +6,31 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:44:54 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/20 21:45:17 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/21 18:15:47 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+char	*get_cmd(t_shell *shell, t_group *group)
+{
+	t_group	*tmp;
+	char	*cmd;
+
+	tmp = group;
+	while (tmp && tmp->type != PIPE)
+	{
+		if (tmp->type == CMD)
+		{
+			cmd = ft_strdup(tmp->word);
+			if (!cmd)
+				free_all_malloc(shell);
+			return (cmd);
+		}
+		tmp = tmp->next;
+	}
+	return (NULL);
+}
 
 void	exec_cmd(t_shell *shell, t_group *group)
 {

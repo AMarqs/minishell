@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:27:05 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/18 20:12:37 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/21 19:54:10 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	cd(t_shell *shell, char **args)
 		file_cd_error(shell, args[0], oldpwd);
 		return ;
 	}
-	shell->exit_status = 0;  //////// SE PUEDE QUITAR
+	shell->exit_status = 0;
 	if (!shell->envp)
 	{
 		free(oldpwd);

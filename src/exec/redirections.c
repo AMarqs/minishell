@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 14:01:08 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/19 15:30:01 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/21 20:08:32 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	input_redirection(t_shell *shell, char *file)
 		if (dup2(fd, STDIN_FILENO) == -1)
 		{
 			perror("minishell: Fatal error: dup2");
-			shell->exit_status = 1; //////////////// FREE_ALL???
+			shell->exit_status = 1;
 		}
 	}
 	close(fd);
@@ -53,7 +53,7 @@ void	output_redirection(t_shell *shell, char *file)
 	{
 		if (dup2(fd, STDOUT_FILENO) == -1)
 		{
-			perror("minishell: Fatal error: dup2"); //////////////// FREE_ALL???
+			perror("minishell: Fatal error: dup2");
 			shell->exit_status = 1;
 		}
 	}
@@ -77,7 +77,7 @@ void	append_redirection(t_shell *shell, char *file)
 	{
 		if (dup2(fd, STDOUT_FILENO) == -1)
 		{
-			perror("minishell: Fatal error: dup2"); //////////////// FREE_ALL???
+			perror("minishell: Fatal error: dup2");
 			shell->exit_status = 1;
 		}
 	}
@@ -101,7 +101,7 @@ void	heredoc_redirection(t_shell *shell, char *doc)
 	{
 		if (dup2(fd, STDIN_FILENO) == -1)
 		{
-			perror("minishell: Fatal error: dup2"); //////////////// FREE_ALL???
+			perror("minishell: Fatal error: dup2");
 			shell->exit_status = 1;
 		}
 	}

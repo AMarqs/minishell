@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 13:07:32 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/15 14:54:57 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/21 19:53:12 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,5 @@ void	pwd(t_shell *shell)
 	ft_putstr_fd(pwd, 1);
 	ft_putstr_fd("\n", 1);
 	free(pwd);
-	shell->exit_status = 0; /////// SE PUEDE QUITAR
+	shell->exit_status = 0;
 }

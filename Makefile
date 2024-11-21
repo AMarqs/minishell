@@ -29,11 +29,12 @@ SRCS = 	main.c \
 		built-ins/pwd.c \
 		built-ins/unset.c \
 		exec/exec_main.c \
+		exec/exec_pipes.c \
 		exec/execution.c \
 		exec/exec_command.c \
 		exec/exec_built_ins.c \
 		exec/exec_utils.c \
-		exec/get_stuff.c \
+		exec/get_args_path.c \
 		exec/redirections.c \
 		exec/heredoc.c \
 		exec/subs_heredoc.c \
