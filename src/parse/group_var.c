@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 14:52:31 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/20 14:44:54 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/21 20:36:35 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,8 @@ char	*search_str_var(t_shell *shell, char *str, char *old)
 		if (ft_strcmp(aux_env->key, str) == 0)
 		{
 			free(str);
+			if (aux_env->value == NULL)
+				return (NULL);
 			str = ft_strdup(aux_env->value);
 			if (!str)
 			{
