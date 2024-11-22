@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:27:05 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/22 19:13:18 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/22 19:55:29 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	update_pwd(t_shell *shell, char *oldpwd)
 	char	*aux;
 
 	tmp = shell->envp;
-	while (tmp->next)
+	while (tmp)
 	{
 		if (ft_strcmp(tmp->key, "PWD") == 0)
 		{
