@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/20 13:24:26 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/22 19:24:50 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void	main_loop(t_shell *shell, char *line)
 	}
 	free(line);
 	shell->line = NULL;
+	free_heredocs(shell);
 	shell->groups = free_groups(shell->groups);
 	shell->tokens = free_tokens(shell->tokens);
 }

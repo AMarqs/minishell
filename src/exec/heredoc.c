@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:56:01 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/20 18:47:37 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/22 19:18:07 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	create_heredoc(t_shell *shell, t_group *group, int hd_num)
 	if (!num)
 		free_all_malloc(shell);
 	doc = ft_strjoin(doc, num);
+	free(num);
 	if (!doc)
 		free_all_malloc(shell);
 	group->file = doc;

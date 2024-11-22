@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/21 19:51:12 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/22 19:29:47 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,8 +181,9 @@ void	set_shlvl(t_shell *shell);
 
 // cd.c
 void	args_cd_error(t_shell *shell);
-void	file_cd_error(t_shell *shell, char *file, char *oldpwd);
+void	file_cd_error(t_shell *shell, char *file);
 void	update_pwd(t_shell *shell, char *oldpwd);
+char	*cd_home(t_shell *shell);
 void	cd(t_shell *shell, char **args);
 
 // echo.c
@@ -341,7 +342,6 @@ void	create_heredoc(t_shell *shell, t_group *group, int hd_num);
 void	read_heredocs(t_shell *shell);
 
 // subs_heredoc.c
-void	print_prev_status(t_shell *shell, int fd);
 void	print_env_var(t_shell *shell, char *line, int *i, int fd);
 void	print_var(t_shell *shell, char *line, int *i, int fd);
 void	subs_hd(t_shell *shell, char *line, int fd);
