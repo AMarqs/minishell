@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal_init.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 13:08:28 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/13 18:58:38 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/28 13:36:46 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_pipes.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 19:49:46 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/21 19:50:19 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/28 14:08:03 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,8 @@ int	exec_pipes(t_shell *shell, t_group *group, int fork_n)
 		waitpid(pids[i], &shell->exit_status, 0);
 		if (WIFEXITED(shell->exit_status))
 			shell->exit_status = WEXITSTATUS(shell->exit_status);
+		else
+			shell->exit_status = 128 + WTERMSIG(shell->exit_status);
 		i++;
 	}
 	free(pids);

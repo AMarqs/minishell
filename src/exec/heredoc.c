@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:56:01 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/22 19:18:07 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/28 13:52:24 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ void	heredoc_loop(t_shell *shell, t_group *group, int fd)
 		if (!line || (ft_strcmp(line, group->next->word) == 0)
 			|| g_signal == SIGINT)
 		{
+			if (g_signal == SIGINT)
+				shell->exit_status = 130;
 			free(line);
 			break ;
 		}

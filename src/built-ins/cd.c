@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:27:05 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/27 13:03:17 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/28 14:19:29 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,9 @@ void	update_pwd(t_shell *shell, char *oldpwd)
 {
 	t_env	*tmp;
 	char	*aux;
+	int		found_old;
 
+	found_old = 0;
 	tmp = shell->envp;
 	while (tmp)
 	{
@@ -50,9 +52,12 @@ void	update_pwd(t_shell *shell, char *oldpwd)
 			aux = tmp->value;
 			tmp->value = oldpwd;
 			free(aux);
+			found_old = 1;
 		}
 		tmp = tmp->next;
 	}
+	if (!found_old)
+		free(oldpwd);
 }
 
 char	*cd_home(t_shell *shell)
@@ -81,7 +86,10 @@ void	cd(t_shell *shell, char **args)
 	if (!args)
 		oldpwd = cd_home(shell);
 	else if (args[0] && args[1])
+	{
 		args_cd_error(shell);
+		oldpwd = NULL;
+	}
 	else if (!args[0][0])
 		oldpwd = getcwd(NULL, 0);
 	else

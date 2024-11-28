@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:17 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/22 19:24:50 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/28 13:58:15 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ t_shell	*init_shell(char **envp)
 	shell->groups = NULL;
 	shell->line = NULL;
 	shell->exit_status = 0;
+	shell->prev_status = 0;
 	shell->envp = environ(shell, envp);
 	init_signal();
 	disable_echoctl();
@@ -73,6 +74,8 @@ int	main(int argc, char **argv, char **envp)
 		while (1)
 		{
 			line = readline("minishell$ ");
+			if (g_signal == SIGINT)
+				shell->prev_status = 130;
 			if (!line)
 				break ;
 			main_loop(shell, line);
