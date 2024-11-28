@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 21:12:00 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/28 18:27:33 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/28 22:07:17 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,10 @@ void	exec_everything(t_shell *shell)
 	cmd = get_cmd(shell, group);
 	if (!cmd)
 	{
+		save_restore_fds(0);
 		if (group)
 			handle_redirections(shell, group, 0);
+		save_restore_fds(1);
 		return ;
 	}
 	if (g_signal != SIGINT)
