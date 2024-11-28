@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/28 18:14:53 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/28 18:28:35 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -339,7 +339,7 @@ void	input_redirection(t_shell *shell, char *file);
 void	output_redirection(t_shell *shell, char *file);
 void	append_redirection(t_shell *shell, char *file);
 void	heredoc_redirection(t_shell *shell, char *doc);
-void	handle_redirections(t_shell *shell, t_group *group);
+void	handle_redirections(t_shell *shell, t_group *group, int flag_in);
 
 // heredoc.c
 void	heredoc_loop(t_shell *shell, t_group *group, int fd);

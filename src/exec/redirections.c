@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 14:01:08 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/21 20:08:32 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/28 18:28:08 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,20 +108,20 @@ void	heredoc_redirection(t_shell *shell, char *doc)
 	close(fd);
 }
 
-void	handle_redirections(t_shell *shell, t_group *group)
+void	handle_redirections(t_shell *shell, t_group *group, int flag_in)
 {
 	t_group	*tmp;
 
 	tmp = group;
 	while (tmp && tmp->type != PIPE)
 	{
-		if (tmp->type == REDIR_IN)
+		if (tmp->type == REDIR_IN && flag_in)
 			input_redirection(shell, tmp->next->word);
 		if (tmp->type == REDIR_OUT)
 			output_redirection(shell, tmp->next->word);
 		if (tmp->type == REDIR_APPEND)
 			append_redirection(shell, tmp->next->word);
-		if (tmp->type == REDIR_HD)
+		if (tmp->type == REDIR_HD && flag_in)
 			heredoc_redirection(shell, tmp->file);
 		if (shell->exit_status != 0)
 			break ;

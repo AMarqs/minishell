@@ -17,6 +17,7 @@ SRCS = 	main.c \
 		parse/group_utils.c \
 		parse/group_errors.c \
 		parse/group_char.c \
+		parse/group_delimiter.c \
 		parse/group_redir.c \
 		parse/group_var.c \
 		built-ins/cd.c \

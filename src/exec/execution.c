@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:44:54 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/28 14:07:02 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/28 18:28:25 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	exec_cmd(t_shell *shell, t_group *group)
 
 void	exec_block(t_shell *shell, t_group *group)
 {
-	handle_redirections(shell, group);
+	handle_redirections(shell, group, 1);
 	if (shell->exit_status)
 		return ;
 	exec_cmd(shell, group);
