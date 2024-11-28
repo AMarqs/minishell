@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/27 13:02:45 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/28 18:14:53 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,6 +265,11 @@ char	*group_chars_var_q(t_shell *shell, t_token **tmp, char *str);
 char	*group_chars_var(t_shell *shell, t_token **tmp, char *str, int *is_var);
 char	*group_chars_empty(t_shell *shell, t_token **tmp, char *str);
 t_token	*group_chars(t_shell *shell, t_token *tokens);
+
+// group_delimiter.c
+int		is_delimeter(t_shell *shell);
+char	*get_del_var(t_token **tokens);
+char	*subs_delimiter(t_shell *shell, t_token **tokens, char *str);
 
 // group_redir.c
 t_token	*group_in(t_shell *shell, t_token *tokens);

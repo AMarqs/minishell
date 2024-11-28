@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   group_char.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 14:40:19 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/20 14:04:45 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/28 18:13:47 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,9 @@ char	*group_chars_var_q(t_shell *shell, t_token **tmp, char *str)
 	{
 		str2 = better_strjoin(str, aux);
 		free(aux);
-		if (!str2)
-		{
-			free(str);
-			free_all_malloc(shell);
-		}
 		free(str);
+		if (!str2)
+			free_all_malloc(shell);
 		str = str2;
 	}
 	return (str);
@@ -88,10 +85,15 @@ t_token	*group_chars(t_shell *shell, t_token *tokens)
 	{
 		while (tokens && tokens->type == CHAR)
 			str = group_chars_char(shell, &tokens, str);
-		if (tokens && tokens->type == ENV_VAR_Q)
-			str = group_chars_var_q(shell, &tokens, str);
-		if (tokens && tokens->type == ENV_VAR)
-			str = group_chars_var(shell, &tokens, str, &is_var);
+		if (tokens && (tokens->type == ENV_VAR || tokens->type == ENV_VAR_Q))
+		{
+			if (is_delimeter(shell))
+				str = subs_delimiter(shell, &tokens, str);
+			else if (tokens && tokens->type == ENV_VAR_Q)
+				str = group_chars_var_q(shell, &tokens, str);
+			else if (tokens && tokens->type == ENV_VAR)
+				str = group_chars_var(shell, &tokens, str, &is_var);
+		}
 		if (tokens && tokens->type == EMPTY)
 			str = group_chars_empty(shell, &tokens, str);
 	}
