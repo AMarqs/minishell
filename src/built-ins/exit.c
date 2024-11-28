@@ -6,17 +6,32 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:09:44 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/28 13:00:12 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/28 21:37:48 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	num_exit_error(t_shell *shell, char *arg)
+void	num_exit_error(t_shell *shell, char **args)
 {
-	ft_putstr_fd("minishell: exit: ", 2);
-	ft_putstr_fd(arg, 2);
-	ft_putstr_fd(": numeric argument required\n", 2);
+	char	*tmp;
+	char	*str;
+
+	tmp = ft_strjoin("minishell: exit: ", args[0]);
+	if (!tmp)
+	{
+		free(args);
+		free_all_malloc(shell);
+	}
+	str = ft_strjoin(tmp, ": numeric argument required\n");
+	free(tmp);
+	if (!str)
+	{
+		free(args);
+		free_all_malloc(shell);
+	}
+	ft_putstr_fd(str, 2);
+	free(str);
 	shell->exit_status = 2;
 }
 
@@ -46,7 +61,7 @@ void	exit_args(t_shell *shell, char **args)
 			if (ft_isdigit(args[0][i - 1]) == 0 && args[0][i - 1] != ' '
 				&& args[0][i - 1] != '\t')
 			{
-				num_exit_error(shell, args[0]);
+				num_exit_error(shell, args);
 				break ;
 			}
 		}

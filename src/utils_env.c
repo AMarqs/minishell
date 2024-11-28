@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_env.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 12:37:11 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/20 21:47:44 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/28 20:15:10 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ char	**get_envp(t_shell *shell)
 	return (env);
 }
 
-void	free_envp(char **env, char *cmd)
+void	free_envp(char **env)
 {
 	int	i;
 
@@ -122,5 +122,4 @@ void	free_envp(char **env, char *cmd)
 	while (env[i])
 		free(env[i++]);
 	free(env);
-	free(cmd);
 }

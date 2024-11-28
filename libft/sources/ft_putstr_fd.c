@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/04 20:53:13 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/10/02 19:46:58 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/28 21:17:11 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,7 @@
 
 void	ft_putstr_fd(char *s, int fd)
 {
-	size_t	i;
-
-	i = -1;
-	while (s[++i])
-		write(fd, &s[i], 1);
+	if (!s)
+		return ;
+	write(fd, s, ft_strlen(s));
 }

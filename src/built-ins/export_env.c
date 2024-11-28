@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export_env.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 19:34:56 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/18 20:15:58 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/28 21:53:13 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,44 +85,41 @@ void	order_dup(t_env *sorted, t_env *first, int len)
 	}
 }
 
-void	print_node(t_env *tmp)
+void	add_nl(t_shell *shell, char **args, char *str)
 {
-	ft_putstr_fd("declare -x ", 1);
-	ft_putstr_fd(tmp->key, 1);
-	if (tmp->value)
-	{
-		ft_putstr_fd("=\"", 1);
-		ft_putstr_fd(tmp->value, 1);
-		ft_putstr_fd("\"", 1);
-	}
-	ft_putstr_fd("\n", 1);
+	char	*aux;
+
+	aux = ft_strjoin(str, "\n");
+	free(str);
+	if (!aux)
+		free_builtin(shell, args);
+	ft_putstr_fd(aux, 1);
+	free(aux);
 }
 
-int	order_env(t_shell *shell)
+void	print_node(t_shell *shell, char **args, t_env *tmp)
 {
-	t_env	*tmp;
-	t_env	*sorted;
-	t_env	*first;
-	int		len;
+	char	*str;
+	char	*aux;
 
-	len = 0;
-	sorted = envp_dup(shell->envp);
-	if (!sorted)
-		return (0);
-	first = sorted;
-	order_dup(sorted, first, len);
-	tmp = first;
-	while (tmp)
+	str = ft_strjoin("declare -x ", tmp->key);
+	if (!str)
+		free_builtin(shell, args);
+	if (tmp->value)
 	{
-		print_node(tmp);
-		tmp = tmp->next;
+		aux = ft_strjoin(str, "=\"");
+		free(str);
+		if (!aux)
+			free_builtin(shell, args);
+		str = ft_strjoin(aux, tmp->value);
+		free(aux);
+		if (!str)
+			free_builtin(shell, args);
+		aux = ft_strjoin(str, "\"");
+		free(str);
+		if (!aux)
+			free_builtin(shell, args);
+		str = aux;
 	}
-	sorted = first;
-	while (sorted)
-	{
-		tmp = sorted;
-		sorted = sorted->next;
-		free(tmp);
-	}
-	return (1);
+	add_nl(shell, args, str);
 }

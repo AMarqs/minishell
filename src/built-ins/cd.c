@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:27:05 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/28 14:19:29 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/28 21:22:36 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,28 @@ void	args_cd_error(t_shell *shell)
 	shell->exit_status = 1;
 }
 
-void	file_cd_error(t_shell *shell, char *file)
+void	file_cd_error(t_shell *shell, char **args, char *file, char *oldpwd)
 {
-	ft_putstr_fd("minishell: cd: ", 2);
-	ft_putstr_fd(file, 2);
-	if (access(file, F_OK))
-		ft_putstr_fd(": No such file or directory\n", 2);
-	else if (!is_directory(file))
-		ft_putstr_fd(": Not a directory\n", 2);
-	else
-		ft_putstr_fd(": Permission denied\n", 2);
+	char	*aux;
+	char	*str;
+
+	aux = ft_strjoin("minishell: cd: ", file);
+	if (!aux)
+	{
+		free(oldpwd);
+		free(args);
+		free_all_malloc(shell);
+	}
+	str = ft_strjoin(aux, get_cd_error(file));
+	free(aux);
+	if (!str)
+	{
+		free(oldpwd);
+		free(args);
+		free_all_malloc(shell);
+	}
+	ft_putstr_fd(str, 2);
+	free(str);
 	shell->exit_status = 1;
 }
 
@@ -74,7 +86,7 @@ char	*cd_home(t_shell *shell)
 		return (oldpwd);
 	}
 	if (chdir(home) == -1)
-		file_cd_error(shell, home);
+		file_cd_error(shell, NULL, home, oldpwd);
 	return (oldpwd);
 }
 
@@ -82,8 +94,7 @@ void	cd(t_shell *shell, char **args)
 {
 	char	*oldpwd;
 
-	shell->exit_status = 0;
-	if (!args)
+	if (!args || !args[0])
 		oldpwd = cd_home(shell);
 	else if (args[0] && args[1])
 	{
@@ -96,7 +107,7 @@ void	cd(t_shell *shell, char **args)
 	{
 		oldpwd = getcwd(NULL, 0);
 		if (chdir(args[0]) == -1)
-			file_cd_error(shell, args[0]);
+			file_cd_error(shell, args, args[0], oldpwd);
 	}
 	if (shell->exit_status || !shell->envp)
 	{

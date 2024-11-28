@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/28 18:28:35 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/28 21:49:29 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ char	**ft_subs_env(char **array, char *str, int j, int k);
 char	**ft_split_env(char *str, char del);
 void	fill_envp(t_shell *shell, char **env, t_env *tmp);
 char	**get_envp(t_shell *shell);
-void	free_envp(char **env, char *cmd);
+void	free_envp(char **env);
 
 //--------------//
 // 	ENVIRONMENT //-------------------------------------------------------------
@@ -181,12 +181,15 @@ void	set_shlvl(t_shell *shell);
 
 // cd.c
 void	args_cd_error(t_shell *shell);
-void	file_cd_error(t_shell *shell, char *file);
+void	file_cd_error(t_shell *shell, char **args, char *file, char *oldpwd);
 void	update_pwd(t_shell *shell, char *oldpwd);
 char	*cd_home(t_shell *shell);
 void	cd(t_shell *shell, char **args);
 
 // echo.c
+void	free_builtin(t_shell *shell, char **args);
+char	*add_n_flag(t_shell *shell, char **args, char *str);
+char	*get_echo_string(t_shell *shell, char **args, int n_flag, int i);
 int		is_n_flag(char *arg);
 void	ft_echo(t_shell *shell, char **args);
 
@@ -194,7 +197,7 @@ void	ft_echo(t_shell *shell, char **args);
 void	env(t_shell *shell);
 
 // exit.c
-void	num_exit_error(t_shell *shell, char *arg);
+void	num_exit_error(t_shell *shell, char **args);
 void	args_exit_error(t_shell *shell);
 void	exit_shell(t_shell *shell, char **args);
 
@@ -208,10 +211,10 @@ void	ft_split_var(t_shell *shell, t_env *new, char *value);
 void	node_dup(t_env **envp, t_env *new, t_env **tmp, t_env **tmp2);
 t_env	*envp_dup(t_env *envp);
 void	order_dup(t_env *sorted, t_env *first, int len);
-void	print_node(t_env *tmp);
-int		order_env(t_shell *shell);
+void	print_node(t_shell *shell, char **args, t_env *tmp);
 
 // export.c
+int		order_env(t_shell *shell, char **args);
 void	add_one_envp(t_env *tmp, t_env *new);
 void	add_envp(t_shell *shell, t_env *new);
 int		check_export(char *args);
@@ -382,6 +385,7 @@ void	malloc_error(void);
 void	free_all_malloc(t_shell *shell);
 void	hd_error(char *word);
 void	perror_error(t_shell *shell, char *word);
+char	*get_cd_error(char *file);
 
 // frees.c
 void	free_array(char **array);

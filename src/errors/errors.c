@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 18:44:53 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/20 18:40:51 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/28 20:51:51 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,4 +39,17 @@ void	perror_error(t_shell *shell, char *word)
 	ft_putstr_fd(": ", 2);
 	perror("");
 	shell->exit_status = 1;
+}
+
+char	*get_cd_error(char *file)
+{
+	char	*str;
+
+	if (access(file, F_OK))
+		str = ": No such file or directory\n";
+	else if (!is_directory(file))
+		str = ": Not a directory\n";
+	else
+		str = ": Permission denied\n";
+	return (str);
 }

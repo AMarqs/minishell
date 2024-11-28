@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   built_ins.c                                        :+:      :+:    :+:   */
+/*   exec_built_ins.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 19:02:20 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/20 19:03:22 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/28 21:21:50 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ void	exec_builtin(t_shell *shell, t_group *group, int i)
 	while (group && group->type != CMD)
 		group = group->next;
 	args = get_args(group->next);
+	if (!args)
+		free_all_malloc(shell);
 	if (i == 1)
 		cd(shell, args);
 	else if (i == 2)

@@ -6,11 +6,40 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 20:09:30 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/28 12:42:27 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/28 21:49:19 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+int	order_env(t_shell *shell, char **args)
+{
+	t_env	*tmp;
+	t_env	*sorted;
+	t_env	*first;
+	int		len;
+
+	len = 0;
+	sorted = envp_dup(shell->envp);
+	if (!sorted)
+		return (0);
+	first = sorted;
+	order_dup(sorted, first, len);
+	tmp = first;
+	while (tmp)
+	{
+		print_node(shell, args, tmp);
+		tmp = tmp->next;
+	}
+	sorted = first;
+	while (sorted)
+	{
+		tmp = sorted;
+		sorted = sorted->next;
+		free(tmp);
+	}
+	return (1);
+}
 
 void	add_one_envp(t_env *tmp, t_env *new)
 {
@@ -76,7 +105,7 @@ int	export(t_shell *shell, char **args)
 	if (!args || args[0] == NULL)
 	{
 		if (shell->envp)
-			return (order_env(shell));
+			return (order_env(shell, args));
 		return (1);
 	}
 	while (args[++i])

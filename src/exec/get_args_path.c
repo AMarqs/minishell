@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_args_path.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:48:48 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/21 18:24:30 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/28 21:28:10 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,6 @@ char	**get_args(t_group *groups)
 	char	**args;
 	int		i;
 
-	if (!groups)
-		return (NULL);
 	i = 0;
 	tmp = groups;
 	while (tmp && tmp->type != PIPE)
