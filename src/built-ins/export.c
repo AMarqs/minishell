@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 20:09:30 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/20 12:25:55 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/28 12:42:27 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,9 @@ int	check_export(char *args)
 		return (0);
 	while (args[i] && args[i] != '=')
 	{
-		if (!ft_isalnum(args[i]) && args[i] != '_')
+		if (args[i] == '+' && args[i + 1] != '=')
+			return (0);
+		if (!ft_isalnum(args[i]) && args[i] != '_' && args[i] != '+')
 			return (0);
 		i++;
 	}

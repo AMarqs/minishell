@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 19:27:26 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/20 12:26:20 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/28 12:55:29 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,33 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return (*str1 - *str2);
 }
 
+void	concatenate_export(t_shell *shell, t_env *new, char **split)
+{
+	new->key = ft_substr(split[0], 0, ft_strlen(split[0]) - 1);
+	free(split[0]);
+	if (!new->key)
+	{
+		free(new);
+		free(split[1]);
+		free(split);
+		free_all_malloc(shell);
+	}
+	if (!search_env(shell, new->key))
+		new->value = split[1];
+	else
+	{
+		new->value = ft_strjoin(search_env(shell, new->key), split[1]);
+		free(split[1]);
+		if (!new->value)
+		{
+			free(new->key);
+			free(new);
+			free(split);
+			free_all_malloc(shell);
+		}
+	}
+}
+
 void	ft_split_var(t_shell *shell, t_env *new, char *value)
 {
 	char	**tmp;
@@ -54,10 +81,15 @@ void	ft_split_var(t_shell *shell, t_env *new, char *value)
 		free(new);
 		free_all_malloc(shell);
 	}
-	new->key = tmp[0];
-	if (!tmp[1] && value[ft_strlen(value) - 1] == '=')
-		new->value = ft_strdup("");
+	if (ft_strchr(tmp[0], '+'))
+		concatenate_export(shell, new, tmp);
 	else
-		new->value = tmp[1];
+	{
+		new->key = tmp[0];
+		if (!tmp[1] && value[ft_strlen(value) - 1] == '=')
+			new->value = ft_strdup("");
+		else
+			new->value = tmp[1];
+	}
 	free(tmp);
 }

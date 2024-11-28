@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:09:44 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/19 12:21:04 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/28 13:00:12 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,10 @@ void	exit_shell(t_shell *shell, char **args)
 			shell->exit_status = (unsigned char)ft_atoi(args[0]);
 	}
 	free(args);
-	i = shell->exit_status;
+	if (shell->exit_status == 0)
+		i = shell->prev_status;
+	else
+		i = shell->exit_status;
 	save_restore_fds(1);
 	free_all(shell);
 	exit(i);
