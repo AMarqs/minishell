@@ -6,26 +6,34 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 13:07:32 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/21 19:53:12 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/29 17:13:33 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	pwd(t_shell *shell)
+void	pwd(t_shell *shell, char **args)
 {
 	char	*pwd;
+	char	*str;
 
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
 	{
-		ft_putstr_fd("minishell: pwd: error retrieving current directory", 1);
-		ft_putstr_fd(": No such file or directory\n", 1);
+		str = "minishell: pwd: error retrieving current directory: ";
+		str = ft_strjoin(str, "No such file or directory\n");
+		if (!str)
+			free_builtin(shell, args);
+		ft_putstr_fd(str, 2);
+		free(str);
 		shell->exit_status = 1;
 		return ;
 	}
-	ft_putstr_fd(pwd, 1);
-	ft_putstr_fd("\n", 1);
+	str = ft_strjoin(pwd, "\n");
 	free(pwd);
+	if (!str)
+		free_builtin(shell, args);
+	ft_putstr_fd(str, 1);
+	free(str);
 	shell->exit_status = 0;
 }

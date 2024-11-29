@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:15:42 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/20 14:57:57 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/29 19:28:59 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,12 @@ int	save_restore_fds(int i)
 	}
 	else
 	{
+		if (stdin == 0 && stdout == 0)
+			return (1);
 		if (!restore_fds(stdin, stdout))
 			return (0);
+		stdin = 0;
+		stdout = 0;
 	}
 	return (1);
 }

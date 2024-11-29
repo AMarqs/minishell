@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_built_ins.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 19:02:20 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/28 21:21:50 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/29 17:11:17 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	exec_builtin(t_shell *shell, t_group *group, int i)
 		free_all_malloc(shell);
 	}
 	else if (i == 6)
-		pwd(shell);
+		pwd(shell, args);
 	else if (i == 7)
 		unset(shell, args);
 	free(args);

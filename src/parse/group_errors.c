@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 14:34:03 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/19 15:02:28 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/29 19:42:37 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,38 +14,84 @@
 
 void	syntax_error_newline(t_shell *shell)
 {
-	ft_putstr_fd("minishell: syntax error near unexpected ", 2);
-	ft_putstr_fd("token `newline'\n", 2);
+	char	*str;
+
+	str = "minishell: syntax error near unexpected token `newline'\n";
+	ft_putstr_fd(str, 2);
 	shell->exit_status = 2;
 }
 
 void	syntax_error(t_shell *shell, char *word)
 {
-	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
-	ft_putstr_fd(word, 2);
-	ft_putstr_fd("'\n", 2);
+	char	*str;
+	char	*aux;
+
+	str = ft_strjoin("minishell: syntax error near unexpected token `", word);
+	if (!str)
+		free_all_malloc(shell);
+	aux = ft_strjoin(str, "'\n");
+	free(str);
+	if (!aux)
+		free_all_malloc(shell);
 	shell->exit_status = 2;
 }
 
-void	print_ambiguous(t_token *token)
+char	*fill_ambiguous(t_token *tmp, char *str)
+{
+	int	i;
+
+	i = 0;
+	while (tmp->type != CHAR && tmp->type != ENV_VAR && tmp->type != ENV_VAR_Q)
+		tmp = tmp->next;
+	while (tmp && (tmp->type == CHAR || tmp->type == ENV_VAR
+			|| tmp->type == ENV_VAR_Q))
+	{
+		str[i++] = tmp->value;
+		tmp = tmp->next;
+	}
+	str[i] = '\0';
+	return (str);
+}
+
+char	*print_ambiguous(t_shell *shell, t_token *token)
 {
 	t_token	*tmp;
+	char	*str;
+	int		i;
 
+	i = 0;
 	tmp = token;
 	while (tmp->type != CHAR && tmp->type != ENV_VAR && tmp->type != ENV_VAR_Q)
 		tmp = tmp->next;
 	while (tmp && (tmp->type == CHAR || tmp->type == ENV_VAR
 			|| tmp->type == ENV_VAR_Q))
 	{
-		ft_putchar_fd(tmp->value, 2);
+		i++;
 		tmp = tmp->next;
 	}
+	tmp = token;
+	str = malloc(sizeof(char) * (i + 1));
+	if (!str)
+		free_all_malloc(shell);
+	str = fill_ambiguous(tmp, str);
+	return (str);
 }
 
 void	ambiguous_error(t_shell *shell, t_group *tmp)
 {
-	ft_putstr_fd("minishell: ", 2);
-	print_ambiguous(tmp->first_token);
-	ft_putstr_fd(": ambiguous redirect\n", 2);
+	char	*str;
+	char	*aux;
+
+	aux = print_ambiguous(shell, tmp->first_token);
+	str = ft_strjoin("minishell: ", aux);
+	free(aux);
+	if (!str)
+		free_all_malloc(shell);
+	aux = ft_strjoin(str, ": ambiguous redirect\n");
+	free(str);
+	if (!aux)
+		free_all_malloc(shell);
+	ft_putstr_fd(aux, 2);
+	free(aux);
 	shell->exit_status = 1;
 }

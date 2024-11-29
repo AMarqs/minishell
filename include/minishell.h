@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/28 21:49:29 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/29 18:05:29 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@
 # include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include <string.h>
+# include <errno.h>
 # include <fcntl.h>
 # include <signal.h>
 # include <dirent.h>
@@ -172,6 +174,7 @@ void	set_(t_shell *shell);
 void	set_env_var(t_shell *shell);
 
 // env_shlvl.c
+void	shlvl_error(t_shell *shell, int i);
 void	found_shlvl(t_shell *shell, int i);
 void	set_shlvl(t_shell *shell);
 
@@ -221,7 +224,7 @@ int		check_export(char *args);
 int		export(t_shell *shell, char **args);
 
 // pwd.c
-void	pwd(t_shell *shell);
+void	pwd(t_shell *shell, char **args);
 
 // unset.c
 void	unset_node(t_shell *shell, char *arg);
@@ -259,7 +262,7 @@ int		add_args_group(t_shell *shell, char *str, int is_var);
 // group_errors.c
 void	syntax_error_newline(t_shell *shell);
 void	syntax_error(t_shell *shell, char *word);
-void	print_ambiguous(t_token *token);
+char	*print_ambiguous(t_shell *shell, t_token *token);
 void	ambiguous_error(t_shell *shell, t_group *tmp);
 
 // group_char.c
@@ -383,7 +386,7 @@ void	disable_echoctl(void);
 // errors.c
 void	malloc_error(void);
 void	free_all_malloc(t_shell *shell);
-void	hd_error(char *word);
+void	hd_error(t_shell *shell, char *word);
 void	perror_error(t_shell *shell, char *word);
 char	*get_cd_error(char *file);
 

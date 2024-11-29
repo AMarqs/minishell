@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 13:56:01 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/28 13:52:24 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/29 17:45:30 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	heredoc_loop(t_shell *shell, t_group *group, int fd)
 	}
 	close(fd);
 	if (!line)
-		hd_error(group->next->word);
+		hd_error(shell, group->next->word);
 }
 
 void	create_heredoc(t_shell *shell, t_group *group, int hd_num)

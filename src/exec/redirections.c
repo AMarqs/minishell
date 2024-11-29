@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 14:01:08 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/28 18:28:08 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/29 17:50:04 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,7 @@ void	input_redirection(t_shell *shell, char *file)
 
 	fd = open(file, O_RDONLY);
 	if (fd < 0)
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(file, 2);
-		ft_putstr_fd(": ", 2);
-		perror("");
-		shell->exit_status = 1;
-	}
+		perror_error(shell, file);
 	else
 	{
 		if (dup2(fd, STDIN_FILENO) == -1)
@@ -42,13 +36,7 @@ void	output_redirection(t_shell *shell, char *file)
 
 	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0700);
 	if (fd < 0)
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(file, 2);
-		ft_putstr_fd(": ", 2);
-		perror("");
-		shell->exit_status = 1;
-	}
+		perror_error(shell, file);
 	else
 	{
 		if (dup2(fd, STDOUT_FILENO) == -1)
@@ -66,13 +54,7 @@ void	append_redirection(t_shell *shell, char *file)
 
 	fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(file, 2);
-		ft_putstr_fd(": ", 2);
-		perror("");
-		shell->exit_status = 1;
-	}
+		perror_error(shell, file);
 	else
 	{
 		if (dup2(fd, STDOUT_FILENO) == -1)
@@ -90,13 +72,7 @@ void	heredoc_redirection(t_shell *shell, char *doc)
 
 	fd = open(doc, O_RDONLY);
 	if (fd < 0)
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(doc, 2);
-		ft_putstr_fd(": ", 2);
-		perror("");
-		shell->exit_status = 1;
-	}
+		perror_error(shell, doc);
 	else
 	{
 		if (dup2(fd, STDIN_FILENO) == -1)

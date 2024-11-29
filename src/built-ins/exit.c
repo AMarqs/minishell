@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:09:44 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/29 16:50:30 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/11/29 19:29:23 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ void	exit_shell(t_shell *shell, char **args)
 		i = shell->prev_status;
 	else
 		i = shell->exit_status;
-	//save_restore_fds(1);
+	save_restore_fds(1);
 	free_all(shell);
 	exit(i);
 }
