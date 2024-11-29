@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_pipes.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 19:49:46 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/28 19:52:36 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/11/29 16:29:15 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ void	exec_child(t_shell *shell, t_group *group, t_fd fd, int *pids)
 {
 	int	i;
 
+	free(pids);
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	if (fd.pipe_fd[0] >= 0)
@@ -52,7 +53,6 @@ void	exec_child(t_shell *shell, t_group *group, t_fd fd, int *pids)
 	redirect_pipes(fd.prev_fd, fd.pipe_fd[1]);
 	exec_block(shell, group);
 	i = shell->exit_status;
-	free(pids);
 	free_all(shell);
 	exit(i);
 }
