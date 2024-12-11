@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   group_errors.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 14:34:03 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/29 19:42:37 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/12/11 12:18:33 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void	syntax_error(t_shell *shell, char *word)
 	free(str);
 	if (!aux)
 		free_all_malloc(shell);
+	ft_putstr_fd(aux, 2);
 	shell->exit_status = 2;
 }
 

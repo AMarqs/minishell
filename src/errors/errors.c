@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   errors.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 18:44:53 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/29 19:40:15 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/12/11 12:22:15 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,12 @@ void	perror_error(t_shell *shell, char *word)
 	free(aux);
 	if (!str)
 		free_all_malloc(shell);
-	ft_putstr_fd(str, 2);
+	aux = ft_strjoin(str, "\n");
 	free(str);
+	if (!aux)
+		free_all_malloc(shell);
+	ft_putstr_fd(aux, 2);
+	free(aux);
 	shell->exit_status = 1;
 }
 
