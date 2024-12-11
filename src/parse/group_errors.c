@@ -6,7 +6,7 @@
 /*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 14:34:03 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/12/11 12:18:33 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/12/11 12:31:42 by glopez-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void	syntax_error(t_shell *shell, char *word)
 	if (!aux)
 		free_all_malloc(shell);
 	ft_putstr_fd(aux, 2);
+	free(aux);
 	shell->exit_status = 2;
 }
 
