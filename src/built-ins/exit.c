@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 17:09:44 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/29 19:29:23 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/12/13 16:36:34 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	exit_shell(t_shell *shell, char **args)
 {
 	int	i;
 
-	//ft_putstr_fd("exit\n", 1);
+	ft_putstr_fd("exit\n", 1);
 	if (args)
 	{
 		exit_args(shell, args);

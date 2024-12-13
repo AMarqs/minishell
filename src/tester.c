@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tester.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: glopez-c <glopez-c@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 13:45:03 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/28 13:06:33 by glopez-c         ###   ########.fr       */
+/*   Updated: 2024/12/13 16:36:16 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	main_tester(char **argv, t_shell *shell)
 	char	*line2;
 
 	shell->path = NULL;
-	line2 = ft_substr(argv[2], 0, ft_strlen(argv[2]) - 1); // SE COME ULTIMO CHAR
+	line2 = ft_substr(argv[2], 0, ft_strlen(argv[2]));
 	if (!line2)
 		free_all_malloc(shell);
 	shell->line = line2;

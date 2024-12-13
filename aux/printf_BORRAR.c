@@ -6,9 +6,13 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 13:08:21 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/19 13:08:46 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/12/13 16:35:31 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+void	print_tokens(t_token *tokens);
+void	print_groups(t_group *group);
+void	print_array(char **array);
 
 #include "../include/minishell.h"
 

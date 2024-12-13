@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 21:41:11 by glopez-c          #+#    #+#             */
-/*   Updated: 2024/11/29 18:05:29 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/12/13 16:35:50 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,10 +123,6 @@ typedef struct s_fd
 }			t_fd;
 
 //-----------------------------------------------------------------------------
-
-void	print_tokens(t_token *tokens); ///////// BORRAR FUNCION
-void	print_groups(t_group *group); ///////// BORRAR FUNCION
-void	print_array(char **array); ///////// BORRAR FUNCION
 
 //------//
 // MAIN //---------------------------------------------------------------------

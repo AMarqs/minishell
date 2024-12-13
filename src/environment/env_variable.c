@@ -6,7 +6,7 @@
 /*   By: albmarqu <albmarqu@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 13:09:53 by albmarqu          #+#    #+#             */
-/*   Updated: 2024/11/19 13:35:34 by albmarqu         ###   ########.fr       */
+/*   Updated: 2024/12/13 16:37:03 by albmarqu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,5 +90,4 @@ void	set_env_var(t_shell *shell)
 	set_oldpwd(shell);
 	set_path(shell);
 	set_shlvl(shell);
-	//set_(shell);
 }

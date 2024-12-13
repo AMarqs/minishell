@@ -45,15 +45,14 @@ SRCS = 	main.c \
 		errors/exec_errors.c \
 		signals/signal_init.c \
 		signals/signal_handler.c \
-		signals/signal_utils.c \
-		printf_BORRAR.c
+		signals/signal_utils.c
 
 SRC = $(addprefix src/, $(SRCS))
 OBJ_DIR = obj
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 FLAGS = -Wall -Wextra -Werror -Ofast -g
-CC = clang
+CC = cc
 
 all: $(NAME)
 
